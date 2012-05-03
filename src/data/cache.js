@@ -187,7 +187,7 @@ define( [ "compose", "troopjs-core/component/base" ], function CacheModule(Compo
 	return Compose.create(Component, function Cache() {
 		this.flush();
 	}, {
-		"displayName" : "data/cache",
+		"displayName" : "ef/data/cache",
 
 		/**
 		 * Puts a node into the cache
