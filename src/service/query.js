@@ -1,4 +1,5 @@
 define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "troopjs-core/util/deferred", "troopjs-core/util/merge"], function QueryModule(Service, Topic, cache, Deferred, merge) {
+	var UNDEFINED = undefined;
 	var ARRAY = Array;
 	var ARRAY_PROTO = ARRAY.prototype;
 	var SLICE = ARRAY_PROTO.slice;
@@ -7,11 +8,9 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 	var LENGTH = "length";
 	var BATCHES = "batches";
 	var INTERVAL = "interval";
-	var NEWLINE = "\n";
-	var RE_ID = /^(\w+![\w\d\-_]+)/gm;
 
 	return Service.extend(function QueryService() {
-		this[BATCHES] = ARRAY();
+		this[BATCHES] = [];
 	}, {
 		displayName : "ef/service/query",
 
@@ -33,50 +32,49 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 				}
 
 				// Reset batches
-				self[BATCHES] = ARRAY();
-
-				// Create deferred array
-				var deferred = ARRAY();
+				self[BATCHES] = [];
 
 				Deferred(function deferredRequest(dfdRequest) {
-					var queries = ARRAY();
-					var topics = ARRAY();
-					var batch;
+					var q = [];
+					var topics = [];
 					var dfd;
 					var i;
 					var iMax;
 
 					// Step through batches
 					for (i = 0, iMax = batches[LENGTH]; i < iMax; i++) {
-						// Get batch
-						batch = batches[i];
-
-						// Get deferred
-						dfd = batch.deferred;
+						// Get dfd
+						dfd = batches[i];
 
 						// Add reject to dfdRequest
 						dfdRequest.fail(dfd.reject);
 
-						// Add batch.query to queries
-						PUSH.apply(queries, batch.query);
+						// Add dfd.q to q
+						PUSH.apply(q, dfd.q);
 
-						// Add batch.topic to topics
-						PUSH.call(topics, batch.topic);
-
-						// Add dfd to deferred
-						PUSH.call(deferred, dfd);
+						// Add dfd.topic to topics
+						PUSH.call(topics, dfd.topic);
 					}
 
-					// Publish ajax
-					self.publish(Topic("ajax", self, topics), merge.call({
-						"data": {
-							"q": queries.join("|")
-						}
-					}, self.config.api.query), dfdRequest);
+					// No data, might as well resolve
+					if (q.length === 0) {
+						dfdRequest.resolve([]);
+					}
+					// Otherwise request from backend
+					else {
+						// Publish ajax
+						self.publish(Topic("ajax", self, topics), merge.call({
+							"data": {
+								"q": q.join("|")
+							}
+						}, self.config.api.query), dfdRequest);
+					}
 				})
 				.done(function requestDone(data, textStatus, jqXHR) {
 					var dfd;
+					var guid;
 					var guids;
+					var queries;
 					var i;
 					var j;
 					var iMax;
@@ -86,20 +84,41 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 					cache.put(data);
 
 					// Step through deferred
-					for (i = 0, iMax = deferred[LENGTH]; i < iMax; i++) {
+					for (i = 0, iMax = batches[LENGTH]; i < iMax; i++) {
 						// Get deferred
-						dfd = deferred[i];
+						dfd = batches[i];
+
+						// Get queries
+						queries = dfd.queries;
 
 						// Get guids
 						guids = dfd.guids;
 
-						// Fill guids from cache
+						// Fill query from cache
 						for (j = 0, jMax = guids[LENGTH]; j < jMax; j++) {
-							guids[j] = cache[guids[j]];
+							guid = guids[j];
+
+							if (guid !== UNDEFINED) {
+								queries[j] = cache[guid];
+							}
 						}
 
 						// Resolve original deferred
-						dfd.resolve.apply(dfd, guids);
+						dfd.resolve.apply(dfd, queries);
+					}
+				})
+				.fail(function requestFail() {
+					var i;
+					var iMax;
+					var dfd;
+
+					// Step through deferred
+					for (i = 0, iMax = batches[LENGTH]; i < iMax; i++) {
+						// Get deferred
+						dfd = batches[i];
+
+						// Reject (with original query as argument)
+						dfd.reject.apply(dfd, dfd.queries);
 					}
 				});
 			}, 200);
@@ -130,33 +149,54 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 			delete self[INTERVAL];
 		},
 
-		"hub/query" : function query(topic, query /*, query, query, .., */, deferred) {
+		"hub/query" : function query(topic /* query, query, query, .., */, deferred) {
 			var self = this;
 			var length = arguments.length - 1;
 			var batches = self[BATCHES];
 
 			// Update (multi) query
-			query = CONCAT.apply(ARRAY_PROTO, SLICE.call(arguments, 1, length));
+			var queries = CONCAT.apply(ARRAY_PROTO, SLICE.call(arguments, 1, length));
 
 			// Update deferred
 			deferred = arguments[length];
 
 			// Deferred query
 			Deferred(function deferredQuery(dfd) {
+				var re = /^(\w+![\w\d\-_]+)/;
 				var matches;
-				var guids = dfd.guids = [];
+				var query;
 
-				// Get all id's from queries
-				while(matches = RE_ID.exec(query.join(NEWLINE))) {
-					guids.push(matches[1]);
+				// Create guids
+				var guids = dfd.guids = [];
+				// Create q
+				var q = dfd.q = [];
+
+				// Get queries length
+				var i = queries.length;
+
+				while (i--) {
+					query = queries[i];
+
+					// Check if this was a valid query
+					if (matches = re.exec(query)) {
+						// Update guids
+						guids[i] = matches[1];
+
+						// Push query to q
+						q.push(query);
+					}
+					else {
+						// Otherwise just store UNDEFINED at index
+						guids[i] = UNDEFINED;
+					}
 				}
 
+				// Store original topic and queries
+				dfd.topic = topic;
+				dfd.queries = queries;
+
 				// Add batch to batches
-				batches.push({
-					topic: topic,
-					query: query,
-					deferred: dfd
-				});
+				batches.push(dfd);
 			})
 			.then(deferred.resolve, deferred.reject);
 		}
