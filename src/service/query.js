@@ -1,7 +1,6 @@
 define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "troopjs-core/util/deferred", "troopjs-core/util/merge"], function QueryModule(Service, Topic, cache, Deferred, merge) {
 	var UNDEFINED = undefined;
-	var ARRAY = Array;
-	var ARRAY_PROTO = ARRAY.prototype;
+	var ARRAY_PROTO = Array.prototype;
 	var SLICE = ARRAY_PROTO.slice;
 	var CONCAT = ARRAY_PROTO.concat;
 	var PUSH = ARRAY_PROTO.push;
@@ -17,136 +16,127 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 		"sig/start" : function start(signal, deferred) {
 			var self = this;
 
-			// Return fast if we already have an interval
-			if (INTERVAL in self) {
-				return;
-			}
+			// Only do this if we don't have an interval already
+			if (!(INTERVAL in self)) {
+				// Set interval
+				self[INTERVAL] = setInterval(function batchInterval() {
+					var batches = self[BATCHES];
 
-			// Set interval
-			self[INTERVAL] = setInterval(function interval() {
-				var batches = self[BATCHES];
-
-				// Return fast if there is nothing to do
-				if (batches[LENGTH] === 0) {
-					return;
-				}
-
-				// Reset batches
-				self[BATCHES] = [];
-
-				Deferred(function deferredRequest(dfdRequest) {
-					var q = [];
-					var topics = [];
-					var dfd;
-					var i;
-					var iMax;
-
-					// Step through batches
-					for (i = 0, iMax = batches[LENGTH]; i < iMax; i++) {
-						// Get dfd
-						dfd = batches[i];
-
-						// Add reject to dfdRequest
-						dfdRequest.fail(dfd.reject);
-
-						// Add dfd.q to q
-						PUSH.apply(q, dfd.q);
-
-						// Add dfd.topic to topics
-						PUSH.call(topics, dfd.topic);
+					// Return fast if there is nothing to do
+					if (batches[LENGTH] === 0) {
+						return;
 					}
 
-					// No data, might as well resolve
-					if (q.length === 0) {
-						dfdRequest.resolve([]);
-					}
-					// Otherwise request from backend
-					else {
-						// Publish ajax
-						self.publish(Topic("ajax", self, topics), merge.call({
-							"data": {
-								"q": q.join("|")
-							}
-						}, self.config.api.query), dfdRequest);
-					}
-				})
-				.done(function requestDone(data, textStatus, jqXHR) {
-					var dfd;
-					var guid;
-					var guids;
-					var queries;
-					var i;
-					var j;
-					var iMax;
-					var jMax;
+					// Reset batches
+					self[BATCHES] = [];
 
-					// Add all new data to cache
-					cache.put(data);
+					Deferred(function deferredRequest(dfdRequest) {
+						var q = [];
+						var topics = [];
+						var dfd;
+						var i;
+						var iMax;
 
-					// Step through deferred
-					for (i = 0, iMax = batches[LENGTH]; i < iMax; i++) {
-						// Get deferred
-						dfd = batches[i];
+						// Step through batches
+						for (i = 0, iMax = batches[LENGTH]; i < iMax; i++) {
+							// Get dfd
+							dfd = batches[i];
 
-						// Get queries
-						queries = dfd.queries;
+							// Add dfd.topic to topics
+							PUSH.call(topics, dfd.topic);
 
-						// Get guids
-						guids = dfd.guids;
-
-						// Fill query from cache
-						for (j = 0, jMax = guids[LENGTH]; j < jMax; j++) {
-							guid = guids[j];
-
-							if (guid !== UNDEFINED) {
-								queries[j] = cache[guid];
-							}
+							// Add dfd.q to q
+							PUSH.apply(q, dfd.q);
 						}
 
-						// Resolve original deferred
-						dfd.resolve.apply(dfd, queries);
-					}
-				})
-				.fail(function requestFail() {
-					var i;
-					var iMax;
-					var dfd;
+						// No data, might as well resolve
+						if (iMax === 0) {
+							dfdRequest.resolve([]);
+						}
+						// Otherwise request from backend
+						else {
+							// Publish ajax
+							self.publish(Topic("ajax", self, topics), merge.call({
+								"data": {
+									"q": q.join("|")
+								}
+							}, self.config.api.query), dfdRequest);
+						}
+					})
+					.done(function requestDone(data, textStatus, jqXHR) {
+						var dfd;
+						var guid;
+						var guids;
+						var queries;
+						var i;
+						var j;
+						var iMax;
+						var jMax;
 
-					// Step through deferred
-					for (i = 0, iMax = batches[LENGTH]; i < iMax; i++) {
-						// Get deferred
-						dfd = batches[i];
+						// Add all new data to cache
+						cache.put(data);
 
-						// Reject (with original query as argument)
-						dfd.reject.apply(dfd, dfd.queries);
-					}
-				});
-			}, 200);
+						// Step through batches
+						for (i = 0, iMax = batches[LENGTH]; i < iMax; i++) {
+							// Get deferred
+							dfd = batches[i];
+
+							// Get queries
+							queries = dfd.queries;
+
+							// Get guids
+							guids = dfd.guids;
+
+							// Fill queries from cache
+							for (j = 0, jMax = guids[LENGTH]; j < jMax; j++) {
+								guid = guids[j];
+
+								if (guid !== UNDEFINED) {
+									queries[j] = cache[guid];
+								}
+							}
+
+							// Resolve original deferred
+							dfd.resolve.apply(dfd, queries);
+						}
+					})
+					.fail(function requestFail() {
+						var i;
+						var iMax;
+						var dfd;
+
+						// Step through deferred
+						for (i = 0, iMax = batches[LENGTH]; i < iMax; i++) {
+							// Get deferred
+							dfd = batches[i];
+
+							// Reject (with original queries as argument)
+							dfd.reject.apply(dfd, dfd.queries);
+						}
+					});
+				}, 200);
+			}
 
 			if (deferred) {
 				deferred.resolve();
 			}
-
-			return self;
 		},
 
 		"sig/stop" : function stop(signal, deferred) {
 			var self = this;
 
-			// Return fast if no interval
-			if (!(INTERVAL in self)) {
-				return
+			// Only do this if we have an interval
+			if (INTERVAL in self) {
+				// Clear interval
+				clearInterval(self[INTERVAL]);
+	
+				// Reset interval
+				delete self[INTERVAL];
 			}
-
-			// Clear interval
-			clearInterval(self[INTERVAL]);
 
 			if (deferred) {
 				deferred.resolve();
 			}
-
-			// Reset interval
-			delete self[INTERVAL];
 		},
 
 		"hub/query" : function query(topic /* query, query, query, .., */, deferred) {
@@ -170,11 +160,11 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 				var guids = dfd.guids = [];
 				// Create q
 				var q = dfd.q = [];
-
 				// Get queries length
 				var i = queries.length;
 
 				while (i--) {
+					// Get query
 					query = queries[i];
 
 					// Check if this was a valid query
@@ -186,7 +176,7 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 						q.push(query);
 					}
 					else {
-						// Otherwise just store UNDEFINED at index
+						// Otherwise just store UNDEFINED at i
 						guids[i] = UNDEFINED;
 					}
 				}
@@ -195,7 +185,7 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 				dfd.topic = topic;
 				dfd.queries = queries;
 
-				// Add batch to batches
+				// Add dfd to batches
 				batches.push(dfd);
 			})
 			.then(deferred.resolve, deferred.reject);
