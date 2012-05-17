@@ -49,9 +49,9 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 							PUSH.apply(q, dfd.q);
 						}
 
-						// No data, might as well resolve
-						if (iMax === 0) {
-							dfdRequest.resolve([]);
+						// No q, might as well resolve
+						if (q[LENGTH] === 0) {
+							dfdRequest.resolve(q);
 						}
 						// Otherwise request from backend
 						else {
