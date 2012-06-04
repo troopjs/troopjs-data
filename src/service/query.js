@@ -152,7 +152,7 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 
 			// Deferred query
 			Deferred(function deferredQuery(dfd) {
-				var re = /^(\w+![\w\d\-_]+)/;
+				var re = /^(\w+![\w\d\-_;]+)/;
 				var matches;
 				var query;
 
