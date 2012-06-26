@@ -63,7 +63,7 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 							}, self.config.api.query), dfdRequest);
 						}
 					})
-					.done(function requestDone(data, textStatus, jqXHR) {
+					.done(function doneRequest(data, textStatus, jqXHR) {
 						var dfd;
 						var guid;
 						var guids;
@@ -100,7 +100,7 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 							dfd.resolve.apply(dfd, queries);
 						}
 					})
-					.fail(function requestFail() {
+					.fail(function failRequest() {
 						var i;
 						var iMax;
 						var dfd;
@@ -152,7 +152,7 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 
 			// Deferred query
 			Deferred(function deferredQuery(dfd) {
-				var re = /^(\w+![\w\d\-_;]+)/;
+				var re = /^(\w+)!(")?([\w\d\-\._;]+)(\2)/;
 				var matches;
 				var query;
 
@@ -170,7 +170,7 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 					// Check if this was a valid query
 					if (matches = re.exec(query)) {
 						// Update guids
-						guids[i] = matches[1];
+						guids[i] = matches[1] + "!" + matches[3];
 
 						// Push query to q
 						q.push(query);
