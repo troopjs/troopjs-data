@@ -152,7 +152,7 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 
 			// Deferred query
 			Deferred(function deferredQuery(dfd) {
-				var re = /^(\w+)!(")?([\w\d\-\._;]+)(\2)/;
+				var re = /^(\w+)!(?:"(.+)"|([\w\d\-_;]+))/;
 				var matches;
 				var query;
 
@@ -170,7 +170,7 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 					// Check if this was a valid query
 					if (matches = re.exec(query)) {
 						// Update guids
-						guids[i] = matches[1] + "!" + matches[3];
+						guids[i] = matches[1] + "!" + (matches[2] || matches[3]);
 
 						// Push query to q
 						q.push(query);
