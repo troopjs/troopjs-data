@@ -1,4 +1,4 @@
-define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "troopjs-utils/deferred", "troopjs-utils/merge"], function QueryModule(Service, Topic, cache, Deferred, merge) {
+define([ "../component/service", "troopjs-core/pubsub/topic", "troopjs-utils/deferred", "troopjs-utils/merge"], function QueryModule(Service, Topic, cache, Deferred, merge) {
 	var UNDEFINED = undefined;
 	var ARRAY_PROTO = Array.prototype;
 	var SLICE = ARRAY_PROTO.slice;
@@ -7,14 +7,19 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 	var LENGTH = "length";
 	var BATCHES = "batches";
 	var INTERVAL = "interval";
+	var CACHE = "cache";
 
-	return Service.extend(function QueryService() {
-		this[BATCHES] = [];
+	return Service.extend(function QueryService(cache) {
+		var me = this;
+
+		me[BATCHES] = [];
+		me[CACHE] = cache;
 	}, {
 		displayName : "ef/service/query",
 
 		"sig/start" : function start(signal, deferred) {
 			var me = this;
+			var cache = me[CACHE];
 
 			// Only do this if we don't have an interval already
 			if (!(INTERVAL in me)) {

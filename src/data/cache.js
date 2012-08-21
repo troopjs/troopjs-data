@@ -1,5 +1,5 @@
-define( [ "compose", "troopjs-core/component/base" ], function CacheModule(Compose, Component) {
-	var UNDEFINED = undefined;
+define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
+	var UNDEFINED;
 	var FALSE = false;
 	var NULL = null;
 	var FUNCTION = Function;
@@ -184,7 +184,7 @@ define( [ "compose", "troopjs-core/component/base" ], function CacheModule(Compo
 		return result;
 	}
 
-	return Compose.create(Component, function Cache() {
+	return Component.extend(function Cache() {
 		this.flush();
 	}, {
 		"displayName" : "ef/data/cache",
