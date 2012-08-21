@@ -14,13 +14,13 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 		displayName : "ef/service/query",
 
 		"sig/start" : function start(signal, deferred) {
-			var self = this;
+			var me = this;
 
 			// Only do this if we don't have an interval already
-			if (!(INTERVAL in self)) {
+			if (!(INTERVAL in me)) {
 				// Set interval
-				self[INTERVAL] = setInterval(function batchInterval() {
-					var batches = self[BATCHES];
+				me[INTERVAL] = setInterval(function batchInterval() {
+					var batches = me[BATCHES];
 
 					// Return fast if there is nothing to do
 					if (batches[LENGTH] === 0) {
@@ -28,7 +28,7 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 					}
 
 					// Reset batches
-					self[BATCHES] = [];
+					me[BATCHES] = [];
 
 					Deferred(function deferredRequest(dfdRequest) {
 						var q = [];
@@ -56,11 +56,11 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 						// Otherwise request from backend
 						else {
 							// Publish ajax
-							self.publish(Topic("ajax", self, topics), merge.call({
+							me.publish(Topic("ajax", me, topics), merge.call({
 								"data": {
 									"q": q.join("|")
 								}
-							}, self.config.api.query), dfdRequest);
+							}, me.config.api.query), dfdRequest);
 						}
 					})
 					.done(function doneRequest(data, textStatus, jqXHR) {
@@ -113,7 +113,8 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 							// Reject (with original queries as argument)
 							dfd.reject.apply(dfd, dfd.queries);
 						}
-					});
+					})
+					.progress(deferred.notify);
 				}, 200);
 			}
 
@@ -123,15 +124,15 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 		},
 
 		"sig/stop" : function stop(signal, deferred) {
-			var self = this;
+			var me = this;
 
 			// Only do this if we have an interval
-			if (INTERVAL in self) {
+			if (INTERVAL in me) {
 				// Clear interval
-				clearInterval(self[INTERVAL]);
+				clearInterval(me[INTERVAL]);
 	
 				// Reset interval
-				delete self[INTERVAL];
+				delete me[INTERVAL];
 			}
 
 			if (deferred) {
@@ -140,9 +141,9 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 		},
 
 		"hub/query" : function query(topic /* query, query, query, .., */, deferred) {
-			var self = this;
+			var me = this;
 			var length = arguments.length - 1;
-			var batches = self[BATCHES];
+			var batches = me[BATCHES];
 
 			// Update (multi) query
 			var queries = CONCAT.apply(ARRAY_PROTO, SLICE.call(arguments, 1, length));
@@ -188,7 +189,7 @@ define([ "../component/service", "troopjs-core/pubsub/topic", "../data/cache", "
 				// Add dfd to batches
 				batches.push(dfd);
 			})
-			.then(deferred.resolve, deferred.reject);
+			.then(deferred.resolve, deferred.reject, deferred.notify);
 		}
 	});
 });
