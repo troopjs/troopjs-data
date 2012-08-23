@@ -1,4 +1,4 @@
-define([ "../component/service", "troopjs-core/pubsub/topic", "troopjs-utils/deferred", "troopjs-utils/merge"], function QueryModule(Service, Topic, cache, Deferred, merge) {
+define([ "../component/service", "troopjs-core/pubsub/topic", "troopjs-utils/deferred", "troopjs-utils/merge"], function QueryModule(Service, Topic, Deferred, merge) {
 	var UNDEFINED = undefined;
 	var ARRAY_PROTO = Array.prototype;
 	var SLICE = ARRAY_PROTO.slice;
