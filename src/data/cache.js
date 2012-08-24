@@ -1,4 +1,4 @@
-define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
+define( [ "../component/gadget" ], function CacheModule(Gadget) {
 	var UNDEFINED;
 	var FALSE = false;
 	var NULL = null;
@@ -71,52 +71,60 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 		// Update INDEXED
 		result[_INDEXED] = now;
 
-		// Check that this is an ARRAY, index all values
-		if (constructor === ARRAY) for (i = 0, iMax = node[LENGTH]; i < iMax; i++) {
+		// Check that this is an ARRAY
+		if (constructor === ARRAY) {
 
-			// Keep value
-			value = node[i];
+			// Index all values
+			for (i = 0, iMax = node[LENGTH]; i < iMax; i++) {
 
-			// Get constructor of value (safely, falling back to UNDEFINED)
-			constructor = value === NULL || value === UNDEFINED
-				? UNDEFINED
-				: value[CONSTRUCTOR];
+				// Keep value
+				value = node[i];
 
-			// Do magic comparison to see if we recursively put this in the cache, or plain put
-			result[i] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0) && value[_INDEXED] !== now
-				? _put(value, constructor, self, now)
-				: value;
+				// Get constructor of value (safely, falling back to UNDEFINED)
+				constructor = value === NULL || value === UNDEFINED
+					? UNDEFINED
+					: value[CONSTRUCTOR];
+
+				// Do magic comparison to see if we recursively put this in the cache, or plain put
+				result[i] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0) && value[_INDEXED] !== now
+					? _put(value, constructor, self, now)
+					: value;
+			}
 		}
 
-		// Check that this is an OBJECT, index all properties
-		else if (constructor === OBJECT) for (property in node) {
-			// Don't overwrite the ID property
-			// or the MAXAGE property
-			// or the INDEXED property
-			// or the COLLAPSED property, if it's false
-			if (property === _ID
+		// Check that this is an OBJECT
+		else if (constructor === OBJECT) {
+
+			// Index all properties
+			for (property in node) {
+				// Except the _ID property
+				// or the _MAXAGE property
+				// or the _INDEXED property
+				// or the _COLLAPSED property, if it's false
+				if (property === _ID
 					|| property === _MAXAGE
 					|| property === _INDEXED
 					|| (property === _COLLAPSED && result[_COLLAPSED] === FALSE)) {
-				continue;
+					continue;
+				}
+
+				// Keep value
+				value = node[property];
+
+				// Get constructor of value (safely, falling back to UNDEFINED)
+				constructor = value === NULL || value === UNDEFINED
+					? UNDEFINED
+					: value[CONSTRUCTOR];
+
+				// Do magic comparison to see if we recursively put this in the cache, or plain put
+				result[property] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0) && value[_INDEXED] !== now
+					? _put(value, constructor, self, now)
+					: value;
 			}
-
-			// Keep value
-			value = node[property];
-
-			// Get constructor of value (safely, falling back to UNDEFINED)
-			constructor = value === NULL || value === UNDEFINED
-				? UNDEFINED
-				: value[CONSTRUCTOR];
-
-			// Do magic comparison to see if we recursively put this in the cache, or plain put
-			result[property] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0) && value[_INDEXED] !== now
-				? _put(value, constructor, self, now)
-				: value;
 		}
 
 		expire : {
-			// Break fast if id is NULL or there is no MAXAGE
+			// Break fast if id is NULL or there is no _MAXAGE
 			if (id === NULL || !(_MAXAGE in result)) {
 				break expire;
 			}
@@ -184,57 +192,12 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 		return result;
 	}
 
-	return Component.extend(function Cache() {
-		this.flush();
-	}, {
+	return Gadget.extend({
 		"displayName" : "ef/data/cache",
 
-		/**
-		 * Puts a node into the cache
-		 * @param node Node to add (object || array)
-		 * @returns Cached node (if it existed in the cache before), otherwise the node sent in
-		 */
-		put : function put(node) {
+		"sig/start" : function onStart(signal, deferred) {
 			var self = this;
-
-			// Get constructor of node (safely, falling back to UNDEFINED)
-			var constructor = node === NULL || node === UNDEFINED
-				? UNDEFINED
-				: node[CONSTRUCTOR];
-
-			// Do magic comparison to see if we should cache this object
-			return constructor === OBJECT || constructor === ARRAY && node[LENGTH] !== 0
-				? _put(node, constructor, self, new Date().getTime())
-				: node;
-		},
-
-		/**
-		 * Flushes cache
-		 * @returns self
-		 */
-		flush : function flush() {
-			var self = this;
-			var property = NULL;
-			var generations;
-
-			// Clear sweep interval (if it exists)
-			if (INTERVAL in self) {
-				clearInterval(self[INTERVAL]);
-
-				// Iterate all properties on self
-				for (property in self) {
-					// Don't delete functions
-					if (self[property][CONSTRUCTOR] === FUNCTION) {
-						continue;
-					}
-
-					// Delete from self (cache)
-					delete self[property];
-				}
-			}
-
-			// Create new generations
-			self[GENERATIONS] = generations = {};
+			var generations = self[GENERATIONS] || (self[GENERATIONS] = {});
 
 			// Create new sweep interval
 			self[INTERVAL] = setInterval(function sweep() {
@@ -271,14 +234,69 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 					// Delete generation
 					delete generations[current[EXPIRES]];
 				}
-				// While there's a next
+					// While there's a next
 				while (current = current[NEXT]);
 
 				// Reset head
 				generations[HEAD] = current;
 			}, MSEC);
 
-			return self;
+			if (deferred) {
+				deferred.resolve();
+			}
+		},
+
+		"sig/stop" : function onStop(signal, deferred) {
+			var self = this;
+			var property = NULL;
+
+			// Clear sweep interval (if it exists)
+			if (INTERVAL in self) {
+				clearInterval(self[INTERVAL]);
+			}
+
+			if (deferred) {
+				deferred.resolve();
+			}
+		},
+
+		"sig/finalize" : function onFinalize(signal, deferred) {
+			var self = this;
+			var property = NULL;
+
+			// Iterate all properties on self
+			for (property in self) {
+				// Don't delete non-objects or objects that don't ducktype cachable
+				if (self[property][CONSTRUCTOR] !== OBJECT || !(_ID in self[property])) {
+					continue;
+				}
+
+				// Delete from self (cache)
+				delete self[property];
+			}
+
+			if (deferred) {
+				deferred.resolve();
+			}
+		},
+
+		/**
+		 * Puts a node into the cache
+		 * @param node Node to add (object || array)
+		 * @returns Cached node (if it existed in the cache before), otherwise the node sent in
+		 */
+		put : function put(node) {
+			var self = this;
+
+			// Get constructor of node (safely, falling back to UNDEFINED)
+			var constructor = node === NULL || node === UNDEFINED
+				? UNDEFINED
+				: node[CONSTRUCTOR];
+
+			// Do magic comparison to see if we should cache this object
+			return constructor === OBJECT || constructor === ARRAY && node[LENGTH] !== 0
+				? _put(node, constructor, self, new Date().getTime())
+				: node;
 		}
 	});
 });
