@@ -5,16 +5,13 @@ buster.testCase("troopjs-ef/data/cache", function (run) {
     require( [ "troopjs-ef/data/cache" ] , function (Cache) {
         run({
             "setUp" : function () {
-                var cache = this.cache = Cache().start();
-
-                console.log("new cache %s", cache);
+                // Create cache with 1 second generations
+                var cache = this.cache = Cache(1000);
+                cache.start();
             },
 
             "tearDown" : function () {
-                var cache = this.cache.stop();
-
-                console.log("delete cache %s", cache);
-
+                this.cache.stop();
                 delete this.cache;
             },
 
@@ -50,16 +47,12 @@ buster.testCase("troopjs-ef/data/cache", function (run) {
 
             "with maxAged data 'one' is cached" : {
                 "setUp" : function () {
-                    this.msec = 1 << 16;
-
-                    console.log("setUp");
-
                     this.cache.put([{
                         "id" : "one",
-                        "maxAge" : 1000
+                        "maxAge" : 1
                     }, {
                         "id" : "two",
-                        "maxAge" : 2000,
+                        "maxAge" : 2,
                         "one" : {
                             "id" : "one",
                             "collapsed" : true
@@ -73,7 +66,6 @@ buster.testCase("troopjs-ef/data/cache", function (run) {
 
                 "for at least half but at most one generation" : function (done) {
                     var cache = this.cache;
-                    var msec = this.msec / 2;
 
                     setTimeout(function () {
                         assert.defined(cache["one"], "(cached for half of one generation) 'one'");
@@ -81,25 +73,21 @@ buster.testCase("troopjs-ef/data/cache", function (run) {
                         setTimeout(function () {
                             refute.defined(cache["one"], "(expired after one generation) 'one'");
                             done();
-                        }, msec)
-                    }, msec);
+                        }, 500);
+                    }, 500);
 
-                    this.timeout = msec * 2 + 100;
+                    this.timeout = 1100;
                 }
             },
 
             "with maxAged data 'two' is cached" : {
                 "setUp" : function () {
-                    this.msec = 1 << 16;
-
-                    console.log("with maxAged data 'two' is cached");
-
                     this.cache.put([{
                         "id" : "one",
-                        "maxAge" : 1000
+                        "maxAge" : 1
                     }, {
                         "id" : "two",
-                        "maxAge" : 2000,
+                        "maxAge" : 2,
                         "one" : {
                             "id" : "one",
                             "collapsed" : true
@@ -113,7 +101,6 @@ buster.testCase("troopjs-ef/data/cache", function (run) {
 
                 "for at least one but at most two generations" : function (done) {
                     var cache = this.cache;
-                    var msec = this.msec;
 
                     setTimeout(function () {
                         assert.defined(cache["two"], "(cached for one generation) 'two'");
@@ -121,10 +108,10 @@ buster.testCase("troopjs-ef/data/cache", function (run) {
                         setTimeout(function () {
                             refute.defined(cache["two"], "(expired after two generations) 'two'");
                             done();
-                        }, msec);
-                    }, msec);
+                        }, 1050);
+                    }, 1000);
 
-                    this.timeout = msec * 2 + 100;
+                    this.timeout = 2100;
                 }
             }
         });

@@ -1,302 +1,316 @@
 define( [ "../component/gadget" ], function CacheModule(Gadget) {
-	var UNDEFINED;
-	var FALSE = false;
-	var NULL = null;
-	var FUNCTION = Function;
-	var OBJECT = Object;
-	var ARRAY = Array;
+    var UNDEFINED;
+    var FALSE = false;
+    var NULL = null;
+    var OBJECT = Object;
+    var ARRAY = Array;
 
-	var INTERVAL = "interval";
-	var GENERATIONS = "generations";
-	var HEAD = "head";
-	var NEXT = "next";
-	var EXPIRES = "expires";
-	var CONSTRUCTOR = "constructor";
-	var LENGTH = "length";
-	var _ID = "id";
-	var _COLLAPSED = "collapsed";
-	var _MAXAGE = "maxAge";
-	var _EXPIRES = "expires";
-	var _INDEXED = "indexed";
-	var SHIFT = 16; // Magic number to use for calculating next generation
-	var MSEC = 1 << SHIFT; // Calculate 'duration' of a generation
+    var SECOND = 1000;
+    var INTERVAL = "interval";
+    var GENERATIONS = "generations";
+    var AGE = "age";
+    var HEAD = "head";
+    var NEXT = "next";
+    var EXPIRES = "expires";
+    var CONSTRUCTOR = "constructor";
+    var LENGTH = "length";
 
-	/**
-	 * Internal method to put a node in the cache
-	 * @param node Node
-	 * @param constructor Constructor of value
-	 * @param self Cache instance
-	 * @param now Current date
-	 * @returns Cached node
-	 */
-	function _put(node, constructor, self, now) {
-		var result;
-		var id = NULL;
-		var i;
-		var iMax;
-		var expires;
-		var head;
-		var current;
-		var next;
-		var generation;
-		var generations = self[GENERATIONS];
-		var property = NULL;
-		var value;
+    var _ID = "id";
+    var _COLLAPSED = "collapsed";
+    var _MAXAGE = "maxAge";
+    var _EXPIRES = "expires";
+    var _INDEXED = "indexed";
 
-		cache : {
-			// Can't cache if there is no id
-			if (!(_ID in node)) {
-				result = node;	// Reuse ref to node (avoids object creation)
-				break cache;
-			}
+    /**
+     * Internal method to put a node in the cache
+     * @param node Node
+     * @param constructor Constructor of value
+     * @param now Current time (seconds)
+     * @returns Cached node
+     */
+    function _put(node, constructor, now) {
+        var self = this;
+        var result;
+        var id;
+        var i;
+        var iMax;
+        var expires;
+        var expired;
+        var head;
+        var current;
+        var next;
+        var generation;
+        var generations = self[GENERATIONS];
+        var property;
+        var value;
 
-			// Get ID
-			id = node[_ID];
+        // First add node to cache (or get the already cached instance)
+        cache : {
+            // Can't cache if there is no id
+            if (!(_ID in node)) {
+                result = node;	// Reuse ref to node (avoids object creation)
+                break cache;
+            }
 
-			// In cache, get it!
-			if (id in self) {
-				result = self[id];
-				break cache;
-			}
+            // Get ID
+            id = node[_ID];
 
-			// Not in cache, add it!
-			result = self[id] = node;	// Reuse ref to node (avoids object creation)
+            // In cache, get it!
+            if (id in self) {
+                result = self[id];
+                break cache;
+            }
 
-			// Ensure COLLAPSED property is reset
-			if (!(_COLLAPSED in node)) {
-				result[_COLLAPSED] = false;
-			}
-		}
+            // Not in cache, add it!
+            result = self[id] = node;	// Reuse ref to node (avoids object creation)
 
-		// Update INDEXED
-		result[_INDEXED] = now;
+            // Ensure COLLAPSED property is set
+            if (!(_COLLAPSED in node)) {
+                result[_COLLAPSED] = false;
+            }
 
-		// Check that this is an ARRAY
-		if (constructor === ARRAY) {
+            // Update INDEXED
+            result[_INDEXED] = now;
+        }
 
-			// Index all values
-			for (i = 0, iMax = node[LENGTH]; i < iMax; i++) {
+        // We have to deep traverse the graph before we do any expiration (as more data for this object can be available)
 
-				// Keep value
-				value = node[i];
+        // Check that this is an ARRAY
+        if (constructor === ARRAY) {
+            // Index all values
+            for (i = 0, iMax = node[LENGTH]; i < iMax; i++) {
 
-				// Get constructor of value (safely, falling back to UNDEFINED)
-				constructor = value === NULL || value === UNDEFINED
-					? UNDEFINED
-					: value[CONSTRUCTOR];
+                // Keep value
+                value = node[i];
 
-				// Do magic comparison to see if we recursively put this in the cache, or plain put
-				result[i] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0) && value[_INDEXED] !== now
-					? _put(value, constructor, self, now)
-					: value;
-			}
-		}
+                // Get constructor of value (safely, falling back to UNDEFINED)
+                constructor = value === NULL || value === UNDEFINED
+                    ? UNDEFINED
+                    : value[CONSTRUCTOR];
 
-		// Check that this is an OBJECT
-		else if (constructor === OBJECT) {
+                // Do magic comparison to see if we recursively put this in the cache, or plain put
+                result[i] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0) && value[_INDEXED] !== now
+                    ? _put.call(self, value, constructor, now)
+                    : value;
+            }
+        }
 
-			// Index all properties
-			for (property in node) {
-				// Except the _ID property
-				// or the _MAXAGE property
-				// or the _INDEXED property
-				// or the _COLLAPSED property, if it's false
-				if (property === _ID
-					|| property === _MAXAGE
-					|| property === _INDEXED
-					|| (property === _COLLAPSED && result[_COLLAPSED] === FALSE)) {
-					continue;
-				}
+        // Check that this is an OBJECT
+        else if (constructor === OBJECT) {
+            // Index all properties
+            for (property in node) {
+                // Except the _ID property
+                // or the _MAXAGE property
+                // or the _INDEXED property
+                // or the _COLLAPSED property, if it's false
+                if (property === _ID
+                    || property === _MAXAGE
+                    || property === _INDEXED
+                    || (property === _COLLAPSED && result[_COLLAPSED] === FALSE)) {
+                    continue;
+                }
 
-				// Keep value
-				value = node[property];
+                // Keep value
+                value = node[property];
 
-				// Get constructor of value (safely, falling back to UNDEFINED)
-				constructor = value === NULL || value === UNDEFINED
-					? UNDEFINED
-					: value[CONSTRUCTOR];
+                // Get constructor of value (safely, falling back to UNDEFINED)
+                constructor = value === NULL || value === UNDEFINED
+                    ? UNDEFINED
+                    : value[CONSTRUCTOR];
 
-				// Do magic comparison to see if we recursively put this in the cache, or plain put
-				result[property] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0) && value[_INDEXED] !== now
-					? _put(value, constructor, self, now)
-					: value;
-			}
-		}
+                // Do magic comparison to see if we recursively put this in the cache, or plain put
+                result[property] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0) && value[_INDEXED] !== now
+                    ? _put.call(self, value, constructor, now)
+                    : value;
+            }
+        }
 
-		expire : {
-			// Break fast if id is NULL or there is no _MAXAGE
-			if (id === NULL || !(_MAXAGE in result)) {
-				break expire;
-			}
+        // Check if we need to move result between generations
+        move : {
+            // Break fast if id is NULL or _MAXAGE is missing
+            if (id === NULL || !(_MAXAGE in result)) {
+                break move;
+            }
 
-			remove : {
-				// Fail fast if there is no old expiration
-				if (!(_EXPIRES in result)) {
-					break remove;
-				}
+            // Calculate expiration and floor
+            expires = 0 | now + result[_MAXAGE];
 
-				// Calculate generation expiration
-				expires = result[_EXPIRES] >>> SHIFT;
+            remove : {
+                // Fail fast if there is no old expiration
+                if (!(_EXPIRES in result)) {
+                    break remove;
+                }
 
-				// Remove ref from generation (if that generation exists)
-				if (expires in generations) {
-					delete generations[expires][id];
-				}
-			}
+                // Get current expiration
+                expired = result[_EXPIRES];
 
-			add : {
-				// Update expiration time, calculate generation expiration
-				expires = (result[_EXPIRES] = now + result[_MAXAGE]) >>> SHIFT;
+                // If expiration has not changed, we can continue
+                if (expired === expires) {
+                    break move;
+                }
 
-				// Existing generation
-				if (expires in generations) {
-					// Add result to generation
-					generations[expires][id] = result;
-					break add;
-				}
+                // Remove ref from generation (if that generation exists)
+                if (expired in generations) {
+                    delete generations[expired][id];
+                }
+            }
 
-				// Create generation
-				generation = generations[expires] = {};
+            add : {
+                // Update expiration time
+                result[_EXPIRES] = expires;
 
-				// Add result to generation
-				generation[id] = result;
+                // Existing generation
+                if (expires in generations) {
+                    // Add result to generation
+                    generations[expires][id] = result;
+                    break add;
+                }
 
-				// Set expiration
-				generation[EXPIRES] = expires;
+                // Create generation with expiration set
+                (generation = generations[expires] = {})[EXPIRES] = expires;
 
-				// Short circuit if there is no head
-				if (generations[HEAD] === UNDEFINED) {
-					generations[HEAD] = generation;
-					break add;
-				}
+                // Add result to generation
+                generation[id] = result;
 
-				// Step through list as long as there is a next, and expiration is "older" than the next expiration
-				for (head = current = generations[HEAD]; next = current[NEXT], next !== UNDEFINED && next[EXPIRES] < expires; current = next);
+                // Short circuit if there is no head
+                if (generations[HEAD] === UNDEFINED) {
+                    generations[HEAD] = generation;
+                    break add;
+                }
 
-				// Check if we're still on the head
-				if (current === head) {
-					// Next generation is the current one (head)
-					generation[NEXT] = current;
+                // Step through list as long as there is a next, and expiration is "older" than the next expiration
+                for (current = head = generations[HEAD]; next = current[NEXT], next !== UNDEFINED && next[EXPIRES] < expires; current = next);
 
-					// Reset head to new generation
-					generations[HEAD] = generation;
-					break add;
-				}
+                // Check if we're still on the head and if we're younger
+                if (current === head && current[EXPIRES] > expires) {
+                    // Next generation is the current one (head)
+                    generation[NEXT] = current;
 
-				// Insert new generation between current and current.next
-				generation[NEXT] = current[NEXT];
-				current[NEXT] = generation;
-			}
-		}
+                    // Reset head to new generation
+                    generations[HEAD] = generation;
+                    break add;
+                }
 
-		return result;
-	}
+                // Insert new generation between current and current.next
+                generation[NEXT] = current[NEXT];
+                current[NEXT] = generation;
+            }
+        }
 
-	return Gadget.extend({
-		"displayName" : "ef/data/cache",
+        return result;
+    }
 
-		"sig/start" : function onStart(signal, deferred) {
-			var self = this;
-			var generations = self[GENERATIONS] || (self[GENERATIONS] = {});
+    return Gadget.extend(function (age) {
+        var me = this;
 
-			// Create new sweep interval
-			self[INTERVAL] = setInterval(function sweep() {
-				// Calculate expiration of the previous generation
-				var expires = (new Date().getTime() >>> SHIFT) - 1;
-				var property = NULL;
-				var current;
+        me[AGE] = age || (60 * SECOND);
+        me[GENERATIONS] = {};
+    }, {
+        "displayName" : "ef/data/cache",
 
-				// Get head
-				current = generations[HEAD];
+        "sig/start" : function onStart(signal, deferred) {
+            var self = this;
+            var generations = self[GENERATIONS];
 
-				// Fail fast if there's no head
-				if (current === UNDEFINED) {
-					return;
-				}
+            // Create new sweep interval
+            self[INTERVAL] = setInterval(function sweep() {
+                // Calculate expiration of this generation
+                var expires = 0 | new Date().getTime() / SECOND;
 
-				do {
-					// Exit if this generation is to young
-					if (current[EXPIRES] > expires) {
-						break;
-					}
+                var property = NULL;
+                var current;
 
-					// Iterate all properties on current
-					for (property in current) {
-						// And is it not a reserved property
-						if (property === EXPIRES || property === NEXT || property === GENERATIONS) {
-							continue;
-						}
+                // Get head
+                current = generations[HEAD];
 
-						// Delete from self (cache)
-						delete self[property];
-					}
+                // Fail fast if there's no head
+                if (current === UNDEFINED) {
+                    return;
+                }
 
-					// Delete generation
-					delete generations[current[EXPIRES]];
-				}
-					// While there's a next
-				while (current = current[NEXT]);
+                do {
+                    // Exit if this generation is to young
+                    if (current[EXPIRES] > expires) {
+                        break;
+                    }
 
-				// Reset head
-				generations[HEAD] = current;
-			}, MSEC);
+                    // Iterate all properties on current
+                    for (property in current) {
+                        // And is it not a reserved property
+                        if (property === EXPIRES || property === NEXT || property === GENERATIONS) {
+                            continue;
+                        }
 
-			if (deferred) {
-				deferred.resolve();
-			}
-		},
+                        // Delete from self (cache)
+                        delete self[property];
+                    }
 
-		"sig/stop" : function onStop(signal, deferred) {
-			var self = this;
-			var property = NULL;
+                    // Delete generation
+                    delete generations[current[EXPIRES]];
+                }
+                // While there's a next
+                while (current = current[NEXT]);
 
-			// Clear sweep interval (if it exists)
-			if (INTERVAL in self) {
-				clearInterval(self[INTERVAL]);
-			}
+                // Reset head
+                generations[HEAD] = current;
+            }, self[AGE]);
 
-			if (deferred) {
-				deferred.resolve();
-			}
-		},
+            if (deferred) {
+                deferred.resolve();
+            }
+        },
 
-		"sig/finalize" : function onFinalize(signal, deferred) {
-			var self = this;
-			var property = NULL;
+        "sig/stop" : function onStop(signal, deferred) {
+            var self = this;
+            var property = NULL;
 
-			// Iterate all properties on self
-			for (property in self) {
-				// Don't delete non-objects or objects that don't ducktype cachable
-				if (self[property][CONSTRUCTOR] !== OBJECT || !(_ID in self[property])) {
-					continue;
-				}
+            // Clear sweep interval (if it exists)
+            if (INTERVAL in self) {
+                clearInterval(self[INTERVAL]);
+            }
 
-				// Delete from self (cache)
-				delete self[property];
-			}
+            if (deferred) {
+                deferred.resolve();
+            }
+        },
 
-			if (deferred) {
-				deferred.resolve();
-			}
-		},
+        "sig/finalize" : function onFinalize(signal, deferred) {
+            var self = this;
+            var property = NULL;
 
-		/**
-		 * Puts a node into the cache
-		 * @param node Node to add (object || array)
-		 * @returns Cached node (if it existed in the cache before), otherwise the node sent in
-		 */
-		put : function put(node) {
-			var self = this;
+            // Iterate all properties on self
+            for (property in self) {
+                // Don't delete non-objects or objects that don't ducktype cachable
+                if (self[property][CONSTRUCTOR] !== OBJECT || !(_ID in self[property])) {
+                    continue;
+                }
 
-			// Get constructor of node (safely, falling back to UNDEFINED)
-			var constructor = node === NULL || node === UNDEFINED
-				? UNDEFINED
-				: node[CONSTRUCTOR];
+                // Delete from self (cache)
+                delete self[property];
+            }
 
-			// Do magic comparison to see if we should cache this object
-			return constructor === OBJECT || constructor === ARRAY && node[LENGTH] !== 0
-				? _put(node, constructor, self, new Date().getTime())
-				: node;
-		}
-	});
+            if (deferred) {
+                deferred.resolve();
+            }
+        },
+
+        /**
+         * Puts a node into the cache
+         * @param node Node to add (object || array)
+         * @returns Cached node (if it existed in the cache before), otherwise the node sent in
+         */
+        put : function put(node) {
+            var self = this;
+
+            // Get constructor of node (safely, falling back to UNDEFINED)
+            var constructor = node === NULL || node === UNDEFINED
+                ? UNDEFINED
+                : node[CONSTRUCTOR];
+
+            // Do magic comparison to see if we should cache this object
+            return constructor === OBJECT || constructor === ARRAY && node[LENGTH] !== 0
+                ? _put.call(self, node, constructor, new Date().getTime() / SECOND)
+                : node;
+        }
+    });
 });
