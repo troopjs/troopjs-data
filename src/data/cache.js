@@ -309,7 +309,7 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
 
             // Do magic comparison to see if we should cache this object
             return constructor === OBJECT || constructor === ARRAY && node[LENGTH] !== 0
-                ? _put.call(self, node, constructor, new Date().getTime() / SECOND)
+                ? _put.call(self, node, constructor, 0 | new Date().getTime() / SECOND)
                 : node;
         }
     });
