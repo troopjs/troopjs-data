@@ -1,24 +1,17 @@
 define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
     var UNDEFINED;
-    var AST = "ast";
     var OP = "op";
     var TEXT = "text";
 
-    return Component.extend(function Query(query) {
-        if (query !== UNDEFINED) {
-            this.parse(query);
-        }
-    }, {
+    return Component.extend({
         parse : function parse(query) {
-            var me = this;
-
-            var l;                  // Length
-            var c;                  // Current character
-            var i;                  // Current index
-            var m;                  // Current mark
-            var q;                  // Current quote
-            var o;                  // Current op
-            var a = me[AST] = [];   // AST
+            var l;      // Length
+            var c;      // Current character
+            var i;      // Current index
+            var m;      // Current mark
+            var q;      // Current quote
+            var o;      // Current op
+            var a = []; // AST
 
             // Step through the query character by character
             for (i = m = 0, l = query.length; i < l; i++) {
@@ -96,7 +89,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                 a.push(o);
             }
 
-            return me;
+            return a;
        }
     });
 });

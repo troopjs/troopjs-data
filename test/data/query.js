@@ -5,7 +5,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
     require( [ "troopjs-ef/data/query" ] , function (Query) {
         run({
             "test!123" : function () {
-                var ast = Query("test!123").ast;
+                var ast = Query().parse("test!123");
 
                 assert.equals(ast, [{
                     "op" : "!",
@@ -14,7 +14,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
             },
 
             "test!123|xxx!321" : function () {
-                var ast = Query("test!123|xxx!321").ast;
+                var ast = Query().parse("test!123|xxx!321");
 
                 assert.equals(ast, [{
                     "op" : "!",
@@ -26,7 +26,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
             },
 
             "test!123.p1" : function () {
-                var ast = Query("test!123.p1").ast;
+                var ast = Query().parse("test!123.p1");
 
                 assert.equals(ast, [{
                     "op" : "!",
@@ -38,7 +38,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
             },
 
             "test!123.p1.p2" : function () {
-                var ast = Query("test!123.p1.p2").ast;
+                var ast = Query().parse("test!123.p1.p2");
 
                 assert.equals(ast, [{
                     "op" : "!",
@@ -53,7 +53,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
             },
 
             "test!123.p1;.p2" : function () {
-                var ast = Query("test!123.p1;.p2").ast;
+                var ast = Query().parse("test!123.p1;.p2");
 
                 assert.equals(ast, [{
                     "op" : "!",
@@ -71,7 +71,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
             },
 
             "test!123.p1;.p2|xxx!321.p3.p4;.p5" : function () {
-                var ast = Query("test!123.p1;.p2|xxx!321.p3.p4;.p5").ast;
+                var ast = Query().parse("test!123.p1;.p2|xxx!321.p3.p4;.p5");
 
                 assert.equals(ast, [{
                     "op" : "!",
@@ -104,7 +104,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
             },
 
             "test!123 .p1;   .p2|xxx!321 .p3  .p4   ; .p5" : function () {
-                var ast = Query("test!123 .p1;   .p2|xxx!321 .p3  .p4   ; .p5").ast;
+                var ast = Query().parse("test!123 .p1;   .p2|xxx!321 .p3  .p4   ; .p5");
 
                 assert.equals(ast, [{
                     "op" : "!",
@@ -137,7 +137,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
             },
 
             "test!'123 321'" : function () {
-                var ast = Query("test!'123 321'").ast;
+                var ast = Query().parse("test!'123 321'");
 
                 assert.equals(ast, [{
                     "op" : "!",
@@ -146,7 +146,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
             },
 
             "test!'123 321'.p1;.'p2 asd'" : function () {
-                var ast = Query("test!'123 321'.p1;.'p2 asd'").ast;
+                var ast = Query().parse("test!'123 321'.p1;.'p2 asd'");
 
                 assert.equals(ast, [{
                     "op" : "!",
