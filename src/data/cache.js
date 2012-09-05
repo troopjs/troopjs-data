@@ -16,7 +16,6 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
     var LENGTH = "length";
 
     var _ID = "id";
-    var _COLLAPSED = "collapsed";
     var _MAXAGE = "maxAge";
     var _EXPIRES = "expires";
     var _INDEXED = "indexed";
@@ -64,11 +63,6 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
             // Not in cache, add it!
             result = self[id] = node;	// Reuse ref to node (avoids object creation)
 
-            // Ensure COLLAPSED property is set
-            if (!(_COLLAPSED in node)) {
-                result[_COLLAPSED] = false;
-            }
-
             // Update INDEXED
             result[_INDEXED] = now;
         }
@@ -89,7 +83,7 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
                     : value[CONSTRUCTOR];
 
                 // Do magic comparison to see if we recursively put this in the cache, or plain put
-                result[i] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0) && value[_INDEXED] !== now
+                result[i] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0)
                     ? _put.call(self, value, constructor, now)
                     : value;
             }
@@ -99,17 +93,6 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
         else if (constructor === OBJECT) {
             // Index all properties
             for (property in node) {
-                // Except the _ID property
-                // or the _MAXAGE property
-                // or the _INDEXED property
-                // or the _COLLAPSED property, if it's false
-                if (property === _ID
-                    || property === _MAXAGE
-                    || property === _INDEXED
-                    || (property === _COLLAPSED && result[_COLLAPSED] === FALSE)) {
-                    continue;
-                }
-
                 // Keep value
                 value = node[property];
 
@@ -119,7 +102,7 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
                     : value[CONSTRUCTOR];
 
                 // Do magic comparison to see if we recursively put this in the cache, or plain put
-                result[property] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0) && value[_INDEXED] !== now
+                result[property] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0)
                     ? _put.call(self, value, constructor, now)
                     : value;
             }
