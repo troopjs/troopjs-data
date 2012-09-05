@@ -1,7 +1,13 @@
 define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
     var UNDEFINED;
     var OP = "op";
+    var OP_ID = "!";
+    var OP_PROPERTY = ".";
+    var OP_PATH = ";"
+    var OP_QUERY = "|";
     var TEXT = "text";
+    var REDUCED = "reduced";
+    var EXPIRES = "expires";
 
     return Component.extend({
         parse : function parse(query) {
@@ -26,7 +32,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                             : c;
                         break;
 
-                    case "!" :  // ID operator
+                    case OP_ID :
                         // Break fast if we're quoted
                         if (q !== UNDEFINED) {
                             break;
@@ -37,8 +43,8 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                         o[OP] = c;
                         break;
 
-                    case "." :  // Property operator
-                    case ";" :  // Sub-query separator
+                    case OP_PROPERTY :
+                    case OP_PATH :
                         // Break fast if we're quoted
                         if (q !== UNDEFINED) {
                             break;
@@ -58,7 +64,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                         m = i + 1;
                         break;
 
-                    case "|" :  // Query separator
+                    case OP_QUERY :
                     case " " :  // Space
                     case "\t" : // Horizontal tab
                     case "\r" : // Carriage return
@@ -90,6 +96,58 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
             }
 
             return a;
-       }
+       },
+
+        reduce : function reduce(query, cache) {
+            var me = this;
+            var now = 0 | new Date().getTime() / 1000;
+
+            var i;
+            var l;
+            var o;
+            var t;
+            var r;
+            var c;
+            var a = me.parse(query);
+
+            for (i = 0, l = a.length; i < l; i++) {
+                var o = a[i];
+
+                switch (o[OP]) {
+                    case OP_ID :
+                        t = o[TEXT];
+
+                        if (t in cache) {
+                            r = c = cache[t];
+                            o[REDUCED] = !(EXPIRES in c) || c[EXPIRES] > now;
+                        }
+                        else {
+                            r = c = UNDEFINED;
+                            o[REDUCED] = false;
+                        }
+                        break;
+
+                    case OP_PROPERTY :
+                        t = o[TEXT];
+
+                        if (c && t in c) {
+                            c = c[t];
+                            o[REDUCED] = true;
+                        }
+                        else {
+                            c = UNDEFINED;
+                            o[REDUCED] = false;
+                        }
+                        break;
+
+                    case OP_PATH :
+                        o[REDUCED] = c !== UNDEFINED;
+                        c = r;
+                        break;
+                }
+            }
+
+            return a;
+        }
     });
 });
