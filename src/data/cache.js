@@ -64,11 +64,6 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
             // Not in cache, add it!
             result = self[id] = node;   // Reuse ref to node (avoids object creation)
 
-            // Ensure _COLLAPSED property is set
-            if (!(_COLLAPSED in node)) {
-                result[_COLLAPSED] = false;
-            }
-
             // Update _INDEXED
             result[_INDEXED] = now;
         }
