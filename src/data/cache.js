@@ -19,6 +19,7 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
     var _MAXAGE = "maxAge";
     var _EXPIRES = "expires";
     var _INDEXED = "indexed";
+    var _COLLAPSED = "collapsed";
 
     /**
      * Internal method to put a node in the cache
@@ -45,13 +46,13 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
 
         // First add node to cache (or get the already cached instance)
         cache : {
-            // Can't cache if there is no id
+            // Can't cache if there is no _ID
             if (!(_ID in node)) {
-                result = node;	// Reuse ref to node (avoids object creation)
+                result = node;          // Reuse ref to node (avoids object creation)
                 break cache;
             }
 
-            // Get ID
+            // Get _ID
             id = node[_ID];
 
             // In cache, get it!
@@ -61,9 +62,14 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
             }
 
             // Not in cache, add it!
-            result = self[id] = node;	// Reuse ref to node (avoids object creation)
+            result = self[id] = node;   // Reuse ref to node (avoids object creation)
 
-            // Update INDEXED
+            // Ensure _COLLAPSED property is set
+            if (!(_COLLAPSED in node)) {
+                result[_COLLAPSED] = false;
+            }
+
+            // Update _INDEXED
             result[_INDEXED] = now;
         }
 
@@ -93,6 +99,13 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
         else if (constructor === OBJECT) {
             // Index all properties
             for (property in node) {
+                // Except the _ID property
+                // or the _COLLAPSED property, if it's false
+                if (property === _ID
+                    || (property === _COLLAPSED && result[_COLLAPSED] === FALSE)) {
+                    continue;
+                }
+
                 // Keep value
                 value = node[property];
 
