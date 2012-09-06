@@ -1,12 +1,11 @@
 buster.testCase("troopjs-ef/data/query", function (run) {
     var assert = buster.assert;
-    var refute = buster.assertions.refute;
 
     require( [ "troopjs-ef/data/query", "troopjs-ef/data/cache" ] , function (Query, Cache) {
         run({
             "parse" : {
                 "test!123" : function () {
-                    var ast = Query().parse("test!123");
+                    var ast = Query("test!123").ast();
 
                     assert.equals(ast, [{
                         "op" : "!",
@@ -15,7 +14,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                 },
 
                 "test!123|xxx!321" : function () {
-                    var ast = Query().parse("test!123|xxx!321");
+                    var ast = Query("test!123|xxx!321").ast();
 
                     assert.equals(ast, [{
                         "op" : "!",
@@ -27,7 +26,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                 },
 
                 "test!123.p1" : function () {
-                    var ast = Query().parse("test!123.p1");
+                    var ast = Query("test!123.p1").ast();
 
                     assert.equals(ast, [{
                         "op" : "!",
@@ -39,7 +38,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                 },
 
                 "test!123.p1.p2" : function () {
-                    var ast = Query().parse("test!123.p1.p2");
+                    var ast = Query("test!123.p1.p2").ast();
 
                     assert.equals(ast, [{
                         "op" : "!",
@@ -53,8 +52,8 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     }]);
                 },
 
-                "test!123.p1;.p2" : function () {
-                    var ast = Query().parse("test!123.p1;.p2");
+                "test!123.p1,.p2" : function () {
+                    var ast = Query("test!123.p1,.p2").ast();
 
                     assert.equals(ast, [{
                         "op" : "!",
@@ -63,7 +62,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         "op" : ".",
                         "text" : "p1"
                     }, {
-                        "op" : ";",
+                        "op" : ",",
                         "text" : ""
                     }, {
                         "op" : ".",
@@ -71,8 +70,8 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     }]);
                 },
 
-                "test!123.p1;.p2|xxx!321.p3.p4;.p5" : function () {
-                    var ast = Query().parse("test!123.p1;.p2|xxx!321.p3.p4;.p5");
+                "test!123.p1,.p2|xxx!321.p3.p4,.p5" : function () {
+                    var ast = Query("test!123.p1,.p2|xxx!321.p3.p4,.p5").ast();
 
                     assert.equals(ast, [{
                         "op" : "!",
@@ -81,7 +80,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         "op" : ".",
                         "text" : "p1"
                     }, {
-                        "op" : ";",
+                        "op" : ",",
                         "text" : ""
                     }, {
                         "op" : ".",
@@ -96,7 +95,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         "op" : ".",
                         "text" : "p4"
                     }, {
-                        "op" : ";",
+                        "op" : ",",
                         "text" : ""
                     }, {
                         "op" : ".",
@@ -104,8 +103,8 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     }]);
                 },
 
-                "test!123 .p1;   .p2|xxx!321 .p3  .p4   ; .p5" : function () {
-                    var ast = Query().parse("test!123 .p1;   .p2|xxx!321 .p3  .p4   ; .p5");
+                "test!123 .p1,   .p2|xxx!321 .p3  .p4   , .p5" : function () {
+                    var ast = Query("test!123 .p1,   .p2|xxx!321 .p3  .p4   , .p5").ast();
 
                     assert.equals(ast, [{
                         "op" : "!",
@@ -114,7 +113,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         "op" : ".",
                         "text" : "p1"
                     }, {
-                        "op" : ";",
+                        "op" : ",",
                         "text" : ""
                     }, {
                         "op" : ".",
@@ -129,7 +128,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         "op" : ".",
                         "text" : "p4"
                     }, {
-                        "op" : ";",
+                        "op" : ",",
                         "text" : ""
                     }, {
                         "op" : ".",
@@ -138,7 +137,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                 },
 
                 "test!'123 321'" : function () {
-                    var ast = Query().parse("test!'123 321'");
+                    var ast = Query("test!'123 321'").ast();
 
                     assert.equals(ast, [{
                         "op" : "!",
@@ -146,8 +145,8 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     }]);
                 },
 
-                "test!'123 321'.p1;.'p2 asd'" : function () {
-                    var ast = Query().parse("test!'123 321'.p1;.'p2 asd'");
+                "test!'123 321'.p1,.'p2 asd'" : function () {
+                    var ast = Query("test!'123 321'.p1,.'p2 asd'").ast();
 
                     assert.equals(ast, [{
                         "op" : "!",
@@ -156,7 +155,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         "op" : ".",
                         "text" : "p1"
                     }, {
-                        "op" : ";",
+                        "op" : ",",
                         "text" : ""
                     }, {
                         "op" : ".",
@@ -167,7 +166,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
 
             "reduce" : {
                 "setUp" : function () {
-                    var cache = this.cache = Cache();
+                    this.cache = Cache();
                 },
 
                 "tearDown" : function () {
@@ -200,191 +199,123 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     },
 
                     "test!123" : function () {
-                        var ast = Query().reduce("test!123", this.cache);
+                        var ast = Query("test!123").reduce(this.cache).ast();
 
-                        assert.equals(ast, [{
-                            "op" : "!",
-                            "text" : "test!123",
-                            "reduced" : true
-                        }]);
+                        assert.equals(ast, []);
                     },
 
                     "test!1234" : function () {
-                        var ast = Query().reduce("test!1234", this.cache);
+                        var ast = Query("test!1234").reduce(this.cache).ast();
 
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!1234",
-                            "reduced" : false
+                            "resolved" : false
                         }]);
                     },
 
                     "test!123.p1" : function () {
-                        var ast = Query().reduce("test!123.p1", this.cache);
+                        var ast = Query("test!123.p1").reduce(this.cache).ast();
 
-                        assert.equals(ast, [{
-                            "op" : "!",
-                            "text" : "test!123",
-                            "reduced" : true
-                        }, {
-                            "op" : ".",
-                            "text" : "p1",
-                            "reduced" : true
-                        }]);
+                        assert.equals(ast, []);
                     },
 
                     "test!123.p2" : function () {
-                        var ast = Query().reduce("test!123.p2", this.cache);
+                        var ast = Query("test!123.p2").reduce(this.cache).ast();
 
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!123",
-                            "reduced" : true
+                            "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p2",
-                            "reduced" : false
+                            "resolved" : false
                         }]);
                     },
 
                     "test!123.p1.p2" : function () {
-                        var ast = Query().reduce("test!123.p1.p2", this.cache);
+                        var ast = Query("test!123.p1.p2").reduce(this.cache).ast();
+
+                        assert.equals(ast, []);
+                    },
+
+                    "test!123.p1,.p3" : function () {
+                        var ast = Query("test!123.p1,.p3").reduce(this.cache).ast();
+
+                        assert.equals(ast, [{
+                            "op" : "!",
+                            "text" : "test!xxx",
+                            "resolved" : false
+                        }]);
+                    },
+
+                    "test!123.p1,.p2" : function () {
+                        var ast = Query("test!123.p1,.p2").reduce(this.cache).ast();
 
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!123",
-                            "reduced" : true
-                        }, {
-                            "op" : ".",
-                            "text" : "p1",
-                            "reduced" : true
+                            "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p2",
-                            "reduced" : true
+                            "resolved" : false
                         }]);
                     },
 
-                    "test!123.p1;.p3" : function () {
-                        var ast = Query().reduce("test!123.p1;.p3", this.cache);
+                    "test!123.p1.p3.p4,.p2" : function () {
+                        var ast = Query("test!123.p1.p3.p4,.p2").reduce(this.cache).ast();
 
                         assert.equals(ast, [{
                             "op" : "!",
-                            "text" : "test!123",
-                            "reduced" : true
-                        }, {
-                            "op" : ".",
-                            "text" : "p1",
-                            "reduced" : true
-                        }, {
-                            "op" : ";",
-                            "text" : "",
-                            "reduced" : true
+                            "text" : "test!321",
+                            "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p3",
-                            "reduced" : false
-                        }]);
-                    },
-
-                    "test!123.p1;.p2" : function () {
-                        var ast = Query().reduce("test!123.p1;.p2", this.cache);
-
-                        assert.equals(ast, [{
-                            "op" : "!",
-                            "text" : "test!123",
-                            "reduced" : true
-                        }, {
-                            "op" : ".",
-                            "text" : "p1",
-                            "reduced" : true
-                        }, {
-                            "op" : ";",
-                            "text" : "",
-                            "reduced" : true
-                        }, {
-                            "op" : ".",
-                            "text" : "p2",
-                            "reduced" : false
-                        }]);
-                    },
-
-                    "test!123.p1.p3.p4;.p2" : function () {
-                        var ast = Query().reduce("test!123.p1.p3.p4;.p2", this.cache);
-
-                        assert.equals(ast, [{
-                            "op" : "!",
-                            "text" : "test!123",
-                            "reduced" : true
-                        }, {
-                            "op" : ".",
-                            "text" : "p1",
-                            "reduced" : true
-                        }, {
-                            "op" : ".",
-                            "text" : "p3",
-                            "reduced" : false
+                            "resolved" : false
                         }, {
                             "op" : ".",
                             "text" : "p4",
-                            "reduced" : false
+                            "resolved" : false
                         }, {
-                            "op" : ";",
-                            "text" : "",
-                            "reduced" : false
+                            "op" : "!",
+                            "text" : "test!123",
+                            "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p2",
-                            "reduced" : false
+                            "resolved" : false
                         }]);
                     },
 
                     "test!123|test!321" : function () {
-                        var ast = Query().reduce("test!123|test!321", this.cache);
+                        var ast = Query("test!123|test!321").reduce(this.cache).ast();
 
-                        assert.equals(ast, [{
-                            "op" : "!",
-                            "text" : "test!123",
-                            "reduced" : true
-                        }, {
-                            "op" : "!",
-                            "text" : "test!321",
-                            "reduced" : true
-                        }]);
+                        assert.equals(ast, []);
                     },
 
-                    "test!123.p1;.p2|test!321.p2" : function () {
-                        var ast = Query().reduce("test!123.p1;.p2|test!321.p2", this.cache);
+                    "test!123.p1,.p2,.p3|test!321.p2" : function () {
+                        var ast = Query("test!123.p1,.p2,.p3|test!321.p2").reduce(this.cache).ast();
 
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!123",
-                            "reduced" : true
-                        }, {
-                            "op" : ".",
-                            "text" : "p1",
-                            "reduced" : true
-                        }, {
-                            "op" : ";",
-                            "text" : "",
-                            "reduced" : true
+                            "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p2",
-                            "reduced" : false
+                            "resolved" : false
                         }, {
                             "op" : "!",
-                            "text" : "test!321",
-                            "reduced" : true
-                        }, {
-                            "op" : ".",
-                            "text" : "p2",
-                            "reduced" : true
+                            "text" : "test!xxx",
+                            "resolved" : false
                         }]);
                     }
                 },
 
-                "with maxAged data" : {
+                "//with maxAged data" : {
                     "setUp" : function () {
                         this.cache.start().put([{
                             "id" : "test!123",
@@ -415,16 +346,12 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         var cache = this.cache;
 
                         setTimeout(function () {
-                            var ast = Query().reduce("test!123|test!321", cache);
+                            var ast = Query("test!123|test!321").reduce(cache).ast();
 
                             assert.equals(ast, [{
                                 "op" : "!",
-                                "text" : "test!123",
-                                "reduced" : true
-                            }, {
-                                "op" : "!",
                                 "text" : "test!321",
-                                "reduced" : false
+                                "resolved" : false
                             }]);
 
                             done();
@@ -432,6 +359,63 @@ buster.testCase("troopjs-ef/data/query", function (run) {
 
                         this.timeout = 1100;
                     }
+                }
+            },
+
+            "rewrite" : {
+                "setUp" : function () {
+                    var cache = this.cache = Cache();
+
+                    cache.put([{
+                        "id" : "test!123",
+                        "collapsed" : false,
+                        "p1" : {
+                            "id" : "test!321",
+                            "collapsed" : true
+                        },
+                        "p3" : {
+                            "id" : "test!xxx",
+                            "collapsed" : true
+                        }
+                    }, {
+                        "id" : "test!321",
+                        "collapsed" : false,
+                        "p2" : {
+                            "id" : "test!yyy",
+                            "collapsed" : true
+                        }
+                    }, {
+                        "id" : "test!yyy",
+                        "collapsed" : false
+                    }]);
+                },
+
+                "tearDown" : function () {
+                    delete this.cache;
+                },
+
+                "test!123" : function () {
+                    var rewrite = Query("test!123").reduce(this.cache).rewrite();
+
+                    assert.equals(rewrite, "");
+                },
+
+                "test!123.p1,.p3" : function () {
+                    var rewrite = Query("test!123.p1,.p3").reduce(this.cache).rewrite();
+
+                    assert.equals(rewrite, "test!xxx");
+                },
+
+                "test!123.p1.p2.p3,.p3" : function () {
+                    var rewrite = Query("test!123.p1.p2.p3,.p3").reduce(this.cache).rewrite();
+
+                    assert.equals(rewrite, "test!yyy.p3|test!xxx");
+                },
+
+                "test!123.p1,.p2,.p3|test!321.p2" : function () {
+                    var rewrite = Query("test!123.p1,.p2,.p3|test!321.p1,.p2").reduce(this.cache).rewrite();
+
+                    assert.equals(rewrite, "test!123.p2|test!xxx|test!321.p1");
                 }
             }
         });
