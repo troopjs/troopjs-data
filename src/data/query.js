@@ -1,5 +1,6 @@
 define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
     var UNDEFINED;
+    var TRUE = true;
     var OP = "op";
     var OP_ID = "!";
     var OP_PROPERTY = ".";
@@ -7,16 +8,17 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
     var OP_QUERY = "|";
     var TEXT = "text";
     var REDUCED = "reduced";
-    var EXPIRES = "expires";
+    var _EXPIRES = "expires";
+    var _COLLAPSED = "collapsed";
 
     return Component.extend({
         parse : function parse(query) {
+            var i;      // Index
             var l;      // Length
             var c;      // Current character
-            var i;      // Current index
             var m;      // Current mark
             var q;      // Current quote
-            var o;      // Current op
+            var o;      // Current operation
             var a = []; // AST
 
             // Step through the query character by character
@@ -102,27 +104,33 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
             var me = this;
             var now = 0 | new Date().getTime() / 1000;
 
-            var i;
-            var l;
-            var o;
-            var t;
-            var r;
-            var c;
-            var a = me.parse(query);
+            var i;                      // Index
+            var l;                      // Length
+            var o;                      // Current operation
+            var t;                      // Current text
+            var r;                      // Current root
+            var n;                      // Current node
+            var a = me.parse(query);    // AST
 
+            // Step through AST
             for (i = 0, l = a.length; i < l; i++) {
-                var o = a[i];
+                o = a[i];
 
                 switch (o[OP]) {
                     case OP_ID :
                         t = o[TEXT];
 
+                        // Do we have this item in cache
                         if (t in cache) {
-                            r = c = cache[t];
-                            o[REDUCED] = !(EXPIRES in c) || c[EXPIRES] > now;
+                            // Set current root and node
+                            r = n = cache[t];
+                            // Set REDUCED if we're not collapsed or expired
+                            o[REDUCED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n) || n[_EXPIRES] > now;
                         }
                         else {
-                            r = c = UNDEFINED;
+                            // Reset current root and node
+                            r = n = UNDEFINED;
+                            // Reset REDUCED
                             o[REDUCED] = false;
                         }
                         break;
@@ -130,19 +138,25 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                     case OP_PROPERTY :
                         t = o[TEXT];
 
-                        if (c && t in c) {
-                            c = c[t];
-                            o[REDUCED] = true;
+                        // Do we have a node and this item in the node
+                        if (n && t in n) {
+                            // Set current node
+                            n = n[t];
+                            // Set REDUCED if we're not collapsed or expired
+                            o[REDUCED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n) || n[_EXPIRES] > now;
                         }
                         else {
-                            c = UNDEFINED;
+                            // Reset current node and REDUCED
+                            n = UNDEFINED;
                             o[REDUCED] = false;
                         }
                         break;
 
                     case OP_PATH :
-                        o[REDUCED] = c !== UNDEFINED;
-                        c = r;
+                        // Set REDUCED if we have a current node
+                        o[REDUCED] = n !== UNDEFINED;
+                        // Set current node to current root
+                        n = r;
                         break;
                 }
             }

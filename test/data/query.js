@@ -188,10 +188,14 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                             }
                         }, {
                             "id" : "test!321",
+                            "collapsed" : false,
                             "p2" : {
-                                "id" : "test!xxx",
+                                "id" : "test!yyy",
                                 "collapsed" : true
                             }
+                        }, {
+                            "id" : "test!yyy",
+                            "collapsed" : false
                         }]);
                     },
 
@@ -279,7 +283,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         }, {
                             "op" : ".",
                             "text" : "p3",
-                            "reduced" : true
+                            "reduced" : false
                         }]);
                     },
 
@@ -386,16 +390,19 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                             "id" : "test!123",
                             "maxAge" : 2,
                             "p1" : {
-                                "id" : "test!321"
+                                "id" : "test!321",
+                                "collapsed" : true
                             },
                             "p3" : {
-                                "id" : "test!xxx"
+                                "id" : "test!xxx",
+                                "collapsed" : true
                             }
                         }, {
                             "id" : "test!321",
                             "maxAge" : 1,
                             "p2" : {
-                                "id" : "test!xxx"
+                                "id" : "test!xxx",
+                                "collapsed" : true
                             }
                         }]);
                     },
