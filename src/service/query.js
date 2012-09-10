@@ -13,6 +13,7 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
     var TEXT = "text";
     var ID = "id";
     var Q = "q";
+    var RE = /("|')(.*?)\1/;
 
     return Service.extend(function QueryService(cache) {
         var me = this;
@@ -155,16 +156,25 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
                 var query;
                 var q = [];
                 var id = [];
+                var ast;
                 var i;
                 var j;
                 var iMax;
 
                 // Iterate queries
                 for (i = 0, iMax = queries[LENGTH], j = 0; i < iMax; i++) {
+                    // Init Query
                     query = Query(queries[i]);
 
-                    id[i] = query.ast()[0][TEXT];
+                    // Get AST
+                    ast = query.ast();
 
+                    // Store unescaped ID
+                    id[i] = ast[LENGTH] > 0
+                        ? ast[0][TEXT].replace(RE, "$2")
+                        : UNDEFINED;
+
+                    // Store reduced query (q)
                     j += (q[i] = query.reduce(cache).rewrite())[LENGTH];
                 }
 
