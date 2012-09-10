@@ -102,16 +102,14 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
                     })
                     .fail(function failRequest() {
                         var batch;
-                        var queries;
                         var i;
 
                         // Iterate batches
                         for (i = batches[LENGTH]; i--;) {
                             batch = batches[i];
-                            queries = batch[QUERIES];
 
                             // Reject (with original queries as argument)
-                            batch.reject.apply(batch, queries);
+                            batch.reject.apply(batch, batch[QUERIES]);
                         }
                     })
                     .progress(deferred.notify);
