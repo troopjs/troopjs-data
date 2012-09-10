@@ -8,6 +8,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
     var OP_PROPERTY = ".";
     var OP_PATH = ",";
     var OP_QUERY = "|";
+    var LENGTH = "length";
     var TEXT = "text";
     var RESOLVED = "resolved";
     var _ID = "id";
@@ -46,7 +47,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
             var ast = [];   // _AST
 
             // Step through the query
-            for (i = m = 0, l = query.length; i < l; i++) {
+            for (i = m = 0, l = query[LENGTH]; i < l; i++) {
                 c = query.charAt(i);
 
                 switch (c) {
@@ -147,7 +148,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
             var k = FALSE;      // Keep flag
 
             // First step is to resolve what we can from the _AST
-            for (i = 0, l = ast.length; i < l; i++) {
+            for (i = 0, l = ast[LENGTH]; i < l; i++) {
                 o = ast[i];
 
                 switch (o[OP]) {
@@ -268,7 +269,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
             var o;              // Current operation
 
             // Step through AST
-            for (i = 0, l = ast.length; i < l; i++) {
+            for (i = 0, l = ast[LENGTH]; i < l; i++) {
                 o = ast[i];
 
                 switch(o[OP]) {
