@@ -166,10 +166,11 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
                     // Get AST
                     ast = query.ast();
 
-                    // Store unescaped ID
-                    id[i] = ast[LENGTH] > 0
-                        ? ast[0][TEXT].replace(RE, "$2")
-                        : UNDEFINED;
+                    // If we have an ID
+                    if (ast[LENGTH] > 0) {
+                        // Store unescaped ID
+                        id[i] = ast[0][TEXT].replace(RE, "$2");
+                    }
 
                     // Get reduced AST
                     ast = query.reduce(cache).ast();
