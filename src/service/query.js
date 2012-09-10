@@ -72,7 +72,7 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
                         }, me.config.api.query), dfdRequest);
                     }
                 })
-                    .done(function doneRequest(data, textStatus, jqXHR) {
+                    .done(function doneRequest(data /* , textStatus, jqXHR */) {
                         var batch;
                         var queries;
                         var id;
