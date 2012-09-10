@@ -315,7 +315,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     }
                 },
 
-                "//with maxAged data" : {
+                "with maxAged data" : {
                     "setUp" : function () {
                         this.cache.start().put([{
                             "id" : "test!123",
