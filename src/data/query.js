@@ -31,12 +31,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
             delete me[_AST];
 
             // Set _QUERY
-            if (query !== UNDEFINED) {
-                me[_QUERY] = query;
-            }
-            else {
-                query = me[_QUERY];
-            }
+            query = me[_QUERY] = (query || me[_QUERY] || "");
 
             var i;          // Index
             var l;          // Length
