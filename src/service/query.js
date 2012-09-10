@@ -181,11 +181,6 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
                     }
                 }
 
-                batch[TOPIC] = topic;
-                batch[QUERIES] = queries;
-                batch[ID] = id;
-                batch[Q] = q;
-
                 // If all queries were fully reduced, we can quick resolve
                 if (q[LENGTH] === 0) {
                     // Iterate queries
@@ -200,6 +195,12 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
                     batch.resolve.apply(batch, queries);
                 }
                 else {
+                    // Store properties on batch
+                    batch[TOPIC] = topic;
+                    batch[QUERIES] = queries;
+                    batch[ID] = id;
+                    batch[Q] = q;
+
                     // Add batch to batches
                     batches.push(batch);
                 }
