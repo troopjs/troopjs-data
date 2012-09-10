@@ -91,8 +91,8 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
                             // Iterate queries
                             for (j = queries[LENGTH]; j--;) {
                                 // If we have a corresponding ID, fetch from cache
-                                if (i in id) {
-                                    queries[j] = cache[id[i]];
+                                if (j in id) {
+                                    queries[j] = cache[id[j]];
                                 }
                             }
 
@@ -158,11 +158,10 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
                 var id = [];
                 var ast;
                 var i;
-                var j;
                 var iMax;
 
                 // Iterate queries
-                for (i = 0, iMax = queries[LENGTH], j = 0; i < iMax; i++) {
+                for (i = 0, iMax = queries[LENGTH]; i < iMax; i++) {
                     // Init Query
                     query = Query(queries[i]);
 
@@ -174,22 +173,28 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
                         ? ast[0][TEXT].replace(RE, "$2")
                         : UNDEFINED;
 
-                    // Store reduced query (q)
-                    j += (q[i] = query.reduce(cache).rewrite())[LENGTH];
+                    // Get reduced AST
+                    ast = query.reduce(cache).ast();
+
+                    // If we're not fully reduced
+                    if (ast[LENGTH] > 0) {
+                        //  Add string version of reduced query to q
+                        PUSH.call(q, query.rewrite());
+                    }
                 }
 
                 batch[TOPIC] = topic;
                 batch[QUERIES] = queries;
-                batch[Q] = q;
                 batch[ID] = id;
+                batch[Q] = q;
 
-                // If we managed to reduce all queries fully
-                if (j === 0) {
+                // If all queries were fully reduced, we can quick resolve
+                if (q[LENGTH] === 0) {
                     // Iterate queries
                     for (i = 0; i < iMax; i++) {
                         // If we have a corresponding ID, fetch from cache
                         if (i in id) {
-                            queries[j] = cache[id[i]];
+                            queries[i] = cache[id[i]];
                         }
                     }
 
