@@ -10,6 +10,7 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
     var CACHE = "cache";
     var TOPIC = "topic";
     var QUERIES = "queries";
+    var RESOLVED = "resolved";
     var TEXT = "text";
     var ID = "id";
     var Q = "q";
@@ -156,6 +157,7 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
                 var id = [];
                 var ast;
                 var i;
+                var j;
                 var iMax;
 
                 // Iterate queries
@@ -175,10 +177,14 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
                     // Get reduced AST
                     ast = query.reduce(cache).ast();
 
-                    // If we're not fully reduced
-                    if (ast[LENGTH] > 0) {
-                        //  Add string version of reduced query to q
-                        PUSH.call(q, query.rewrite());
+                    // Step backwards through AST
+                    for (j = ast[LENGTH]; j-- > 0;) {
+                        // If this op is not resolved
+                        if (!ast[j][RESOLVED]) {
+							//  Add string version of reduced query to q
+							PUSH.call(q, query.rewrite())
+							break;
+                        }
                     }
                 }
 
