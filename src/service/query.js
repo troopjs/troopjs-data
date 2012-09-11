@@ -11,10 +11,9 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
     var TOPIC = "topic";
     var QUERIES = "queries";
     var RESOLVED = "resolved";
-    var TEXT = "text";
+    var RAW = "raw";
     var ID = "id";
     var Q = "q";
-    var RE = /("|')(.*?)\1/;
 
     return Service.extend(function QueryService(cache) {
         var me = this;
@@ -170,8 +169,8 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
 
                     // If we have an ID
                     if (ast[LENGTH] > 0) {
-                        // Store unescaped ID
-                        id[i] = ast[0][TEXT].replace(RE, "$2");
+                        // Store raw ID
+                        id[i] = ast[0][RAW];
                     }
 
                     // Get reduced AST
@@ -181,9 +180,9 @@ define([ "../component/service", "../data/query", "troopjs-core/pubsub/topic", "
                     for (j = ast[LENGTH]; j-- > 0;) {
                         // If this op is not resolved
                         if (!ast[j][RESOLVED]) {
-							//  Add string version of reduced query to q
-							PUSH.call(q, query.rewrite())
-							break;
+                            //  Add string version of reduced query to q
+                            PUSH.call(q, query.rewrite())
+                            break;
                         }
                     }
                 }
