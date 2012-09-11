@@ -135,7 +135,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                 me.parse();
             }
 
-            var ast = me[_AST];  // _AST
+            var ast = me[_AST]; // _AST
             var result = [];    // Result
             var i;              // Index
             var l;              // Length
