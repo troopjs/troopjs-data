@@ -143,7 +143,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
             var i;              // Index
             var l;              // Length
             var o;              // Current operation
-            var t;              // Current text
+            var e;              // Current escaped
             var r;              // Current root
             var n;              // Current node
             var k = FALSE;      // Keep flag
@@ -157,13 +157,13 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                         // Set root
                         r = o;
 
-                        // Get t from o
-                        t = o[TEXT];
+                        // Get e from o
+                        e = o[ESCAPED];
 
                         // Do we have this item in cache
-                        if (t in cache) {
+                        if (e in cache) {
                             // Set current node
-                            n = cache[t];
+                            n = cache[e];
                             // Set RESOLVED if we're not collapsed or expired
                             o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n) || n[_EXPIRES] > now;
                         }
@@ -176,16 +176,16 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                         break;
 
                     case OP_PROPERTY :
-                        // Get t from o
-                        t = o[TEXT];
+                        // Get e from o
+                        e = o[ESCAPED];
 
                         // Do we have a node and this item in the node
-                        if (n && t in n) {
+                        if (n && e in n) {
                             // Set current node
-                            n = n[t];
+                            n = n[e];
                             // Change OP to OP_ID
                             o[OP] = OP_ID;
-                            // Update NORMALIZED to _ID and TEXT to escaped version of NORMALIZED
+                            // Update ESCAPED to _ID and TEXT to escaped version of ESCAPED
                             o[TEXT] = (o[ESCAPED] = n[_ID]).replace(RE_ESCAPED, TO_TEXT);
                             // Set RESOLVED if we're not collapsed or expired
                             o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n) || n[_EXPIRES] > now;
@@ -198,18 +198,18 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                         break;
 
                     case OP_PATH :
-                        // Get t from r
-                        t = r[TEXT];
+                        // Get e from r
+                        e = r[ESCAPED];
 
                         // Set current node
-                        n = cache[t];
+                        n = cache[e];
 
                         // Change OP to OP_ID
                         o[OP] = OP_ID;
 
                         // Copy properties from r
                         o[TEXT] = r[TEXT];
-                        o[ESCAPED] = r[ESCAPED];
+                        o[ESCAPED] = e;
                         o[RESOLVED] = r[RESOLVED];
                         break;
                 }

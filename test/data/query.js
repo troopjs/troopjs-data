@@ -473,6 +473,12 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     var rewrite = Query("test!123.p1,.p2,.p3|test!321.p1,.p2").reduce(this.cache).rewrite();
 
                     assert.equals(rewrite, "test!123.p2|test!xxx|test!321.p1");
+                },
+
+                "test!'123'.p1,.p2,.p3|test!321.p1,.p2" : function () {
+                    var rewrite = Query("test!'123'.p1,.p2,.p3|test!321.p1,.p2").reduce(this.cache).rewrite();
+
+                    assert.equals(rewrite, "test!'123'.p2|test!xxx|test!321.p1");
                 }
             }
         });
