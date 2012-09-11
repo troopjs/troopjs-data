@@ -17,7 +17,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     assert.equals(ast, [{
                         "op" : "!",
                         "text" : "test!123",
-                        "escaped" : "test!123"
+                        "raw" : "test!123"
                     }]);
                 },
 
@@ -27,11 +27,11 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     assert.equals(ast, [{
                         "op" : "!",
                         "text" : "test!123",
-                        "escaped" : "test!123"
+                        "raw" : "test!123"
                     }, {
                         "op" : "!",
                         "text" : "xxx!321",
-                        "escaped" : "xxx!321"
+                        "raw" : "xxx!321"
                     }]);
                 },
 
@@ -41,11 +41,11 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     assert.equals(ast, [{
                         "op" : "!",
                         "text" : "test!123",
-                        "escaped" : "test!123"
+                        "raw" : "test!123"
                     }, {
                         "op" : ".",
                         "text" : "p1",
-                        "escaped" : "p1"
+                        "raw" : "p1"
                     }]);
                 },
 
@@ -55,15 +55,15 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     assert.equals(ast, [{
                         "op" : "!",
                         "text" : "test!123",
-                        "escaped" : "test!123"
+                        "raw" : "test!123"
                     }, {
                         "op" : ".",
                         "text" : "p1",
-                        "escaped" : "p1"
+                        "raw" : "p1"
                     }, {
                         "op" : ".",
                         "text" : "p2",
-                        "escaped" : "p2"
+                        "raw" : "p2"
                     }]);
                 },
 
@@ -73,19 +73,19 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     assert.equals(ast, [{
                         "op" : "!",
                         "text" : "test!123",
-                        "escaped" : "test!123"
+                        "raw" : "test!123"
                     }, {
                         "op" : ".",
                         "text" : "p1",
-                        "escaped" : "p1"
+                        "raw" : "p1"
                     }, {
                         "op" : ",",
                         "text" : "",
-                        "escaped" : ""
+                        "raw" : ""
                     }, {
                         "op" : ".",
                         "text" : "p2",
-                        "escaped" : "p2"
+                        "raw" : "p2"
                     }]);
                 },
 
@@ -95,39 +95,39 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     assert.equals(ast, [{
                         "op" : "!",
                         "text" : "test!123",
-                        "escaped" : "test!123"
+                        "raw" : "test!123"
                     }, {
                         "op" : ".",
                         "text" : "p1",
-                        "escaped" : "p1"
+                        "raw" : "p1"
                     }, {
                         "op" : ",",
                         "text" : "",
-                        "escaped" : ""
+                        "raw" : ""
                     }, {
                         "op" : ".",
                         "text" : "p2",
-                        "escaped" : "p2"
+                        "raw" : "p2"
                     }, {
                         "op" : "!",
                         "text" : "xxx!321",
-                        "escaped" : "xxx!321"
+                        "raw" : "xxx!321"
                     }, {
                         "op" : ".",
                         "text" : "p3",
-                        "escaped" : "p3"
+                        "raw" : "p3"
                     }, {
                         "op" : ".",
                         "text" : "p4",
-                        "escaped" : "p4"
+                        "raw" : "p4"
                     }, {
                         "op" : ",",
                         "text" : "",
-                        "escaped" : ""
+                        "raw" : ""
                     }, {
                         "op" : ".",
                         "text" : "p5",
-                        "escaped" : "p5"
+                        "raw" : "p5"
                     }]);
                 },
 
@@ -137,39 +137,39 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     assert.equals(ast, [{
                         "op" : "!",
                         "text" : "test!123",
-                        "escaped" : "test!123"
+                        "raw" : "test!123"
                     }, {
                         "op" : ".",
                         "text" : "p1",
-                        "escaped" : "p1"
+                        "raw" : "p1"
                     }, {
                         "op" : ",",
                         "text" : "",
-                        "escaped" : ""
+                        "raw" : ""
                     }, {
                         "op" : ".",
                         "text" : "p2",
-                        "escaped" : "p2"
+                        "raw" : "p2"
                     }, {
                         "op" : "!",
                         "text" : "xxx!321",
-                        "escaped" : "xxx!321"
+                        "raw" : "xxx!321"
                     }, {
                         "op" : ".",
                         "text" : "p3",
-                        "escaped" : "p3"
+                        "raw" : "p3"
                     }, {
                         "op" : ".",
                         "text" : "p4",
-                        "escaped" : "p4"
+                        "raw" : "p4"
                     }, {
                         "op" : ",",
                         "text" : "",
-                        "escaped" : ""
+                        "raw" : ""
                     }, {
                         "op" : ".",
                         "text" : "p5",
-                        "escaped" : "p5"
+                        "raw" : "p5"
                     }]);
                 },
 
@@ -179,7 +179,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     assert.equals(ast, [{
                         "op" : "!",
                         "text" : "test!'123 321'",
-                        "escaped" : "test!123 321"
+                        "raw" : "test!123 321"
                     }]);
                 },
 
@@ -189,19 +189,19 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                     assert.equals(ast, [{
                         "op" : "!",
                         "text" : "test!'123 321'",
-                        "escaped" : "test!123 321"
+                        "raw" : "test!123 321"
                     }, {
                         "op" : ".",
                         "text" : "p1",
-                        "escaped" : "p1"
+                        "raw" : "p1"
                     }, {
                         "op" : ",",
                         "text" : "",
-                        "escaped" : ""
+                        "raw" : ""
                     }, {
                         "op" : ".",
                         "text" : "'p2 asd'",
-                        "escaped" : "p2 asd"
+                        "raw" : "p2 asd"
                     }]);
                 }
             },
@@ -223,6 +223,13 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                                 "id" : "test!321",
                                 "collapsed" : true
                             },
+                            "px" : [{
+                                "id" : "test!zzz",
+                                "collapsed" : true
+                            }, {
+                                "id" : "test!abc",
+                                "collapsed" : true
+                            }],
                             "p3" : {
                                 "id" : "test!xxx",
                                 "collapsed" : true
@@ -236,6 +243,9 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                             }
                         }, {
                             "id" : "test!yyy",
+                            "collapsed" : false
+                        }, {
+                            "id" : "test:zzz",
                             "collapsed" : false
                         }]);
                     },
@@ -252,7 +262,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!1234",
-                            "escaped" : "test!1234",
+                            "raw" : "test!1234",
                             "resolved" : false
                         }]);
                     },
@@ -269,12 +279,12 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!123",
-                            "escaped" : "test!123",
+                            "raw" : "test!123",
                             "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p2",
-                            "escaped" : "p2",
+                            "raw" : "p2",
                             "resolved" : false
                         }]);
                     },
@@ -291,7 +301,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!xxx",
-                            "escaped" : "test!xxx",
+                            "raw" : "test!xxx",
                             "resolved" : false
                         }]);
                     },
@@ -302,12 +312,12 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!123",
-                            "escaped" : "test!123",
+                            "raw" : "test!123",
                             "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p2",
-                            "escaped" : "p2",
+                            "raw" : "p2",
                             "resolved" : false
                         }]);
                     },
@@ -318,27 +328,27 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!321",
-                            "escaped" : "test!321",
+                            "raw" : "test!321",
                             "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p3",
-                            "escaped" : "p3",
+                            "raw" : "p3",
                             "resolved" : false
                         }, {
                             "op" : ".",
                             "text" : "p4",
-                            "escaped" : "p4",
+                            "raw" : "p4",
                             "resolved" : false
                         }, {
                             "op" : "!",
                             "text" : "test!123",
-                            "escaped" : "test!123",
+                            "raw" : "test!123",
                             "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p2",
-                            "escaped" : "p2",
+                            "raw" : "p2",
                             "resolved" : false
                         }]);
                     },
@@ -355,18 +365,34 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!123",
-                            "escaped" : "test!123",
+                            "raw" : "test!123",
                             "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p2",
-                            "escaped" : "p2",
+                            "raw" : "p2",
                             "resolved" : false
                         }, {
                             "op" : "!",
                             "text" : "test!xxx",
-                            "escaped" : "test!xxx",
+                            "raw" : "test!xxx",
                             "resolved" : false
+                        }]);
+                    },
+
+                    "test!123.px" : function () {
+                        var ast = Query("test!123.px").reduce(this.cache).ast();
+
+                        assert.equals(ast, [{
+                            "op" : "!",
+                            "text" : "test!123",
+                            "raw" : "test!123",
+                            "resolved" : true
+                        }, {
+                            "op" : ".",
+                            "text" : "px",
+                            "raw" : "px",
+                            "resolved" : true
                         }]);
                     }
                 },
@@ -407,7 +433,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                             assert.equals(ast, [{
                                 "op" : "!",
                                 "text" : "test!321",
-                                "escaped" : "test!321",
+                                "raw" : "test!321",
                                 "resolved" : false
                             }]);
 

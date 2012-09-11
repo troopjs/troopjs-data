@@ -10,7 +10,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
     var OP_QUERY = "|";
     var LENGTH = "length";
     var TEXT = "text";
-    var ESCAPED = "escaped";
+    var RAW = "raw";
     var RESOLVED = "resolved";
     var _ID = "id";
     var _EXPIRES = "expires";
@@ -19,8 +19,8 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
     var _QUERY = "_query";
 
     var RE_TEXT = /("|')(.*?)\1/;
-    var TO_ESCAPED = "$2";
-    var RE_ESCAPED = /!(.*[!,|.\s]+.*)/;
+    var TO_RAW = "$2";
+    var RE_RAW = /!(.*[!,|.\s]+.*)/;
     var TO_TEXT = "!'$1'";
 
     return Component.extend(function Query(query) {
@@ -80,7 +80,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 
                         // If there's an active op, store TEXT and push on _AST
                         if (o !== UNDEFINED) {
-                            o[ESCAPED] = (o[TEXT] = query.substring(m, i)).replace(RE_TEXT, TO_ESCAPED);
+                            o[RAW] = (o[TEXT] = query.substring(m, i)).replace(RE_TEXT, TO_RAW);
                             ast.push(o);
                         }
 
@@ -104,7 +104,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 
                         // If there's an active op, store TEXT and push on _AST
                         if (o !== UNDEFINED) {
-                            o[ESCAPED] = (o[TEXT] = query.substring(m, i)).replace(RE_TEXT, TO_ESCAPED);
+                            o[RAW] = (o[TEXT] = query.substring(m, i)).replace(RE_TEXT, TO_RAW);
                             ast.push(o);
                         }
 
@@ -119,7 +119,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 
             // If there's an active op, store TEXT and push on _AST
             if (o !== UNDEFINED) {
-                o[ESCAPED] = (o[TEXT] = query.substring(m, l)).replace(RE_TEXT, TO_ESCAPED);
+                o[RAW] = (o[TEXT] = query.substring(m, l)).replace(RE_TEXT, TO_RAW);
                 ast.push(o);
             }
 
@@ -143,7 +143,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
             var i;              // Index
             var l;              // Length
             var o;              // Current operation
-            var e;              // Current escaped
+            var x;              // Current raw
             var r;              // Current root
             var n;              // Current node
             var k = FALSE;      // Keep flag
@@ -158,12 +158,12 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                         r = o;
 
                         // Get e from o
-                        e = o[ESCAPED];
+                        x = o[RAW];
 
                         // Do we have this item in cache
-                        if (e in cache) {
+                        if (x in cache) {
                             // Set current node
-                            n = cache[e];
+                            n = cache[x];
                             // Set RESOLVED if we're not collapsed or expired
                             o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n) || n[_EXPIRES] > now;
                         }
@@ -177,18 +177,24 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 
                     case OP_PROPERTY :
                         // Get e from o
-                        e = o[ESCAPED];
+                        x = o[RAW];
 
                         // Do we have a node and this item in the node
-                        if (n && e in n) {
+                        if (n && x in n) {
                             // Set current node
-                            n = n[e];
-                            // Change OP to OP_ID
-                            o[OP] = OP_ID;
-                            // Update ESCAPED to _ID and TEXT to escaped version of ESCAPED
-                            o[TEXT] = (o[ESCAPED] = n[_ID]).replace(RE_ESCAPED, TO_TEXT);
-                            // Set RESOLVED if we're not collapsed or expired
-                            o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n) || n[_EXPIRES] > now;
+                            n = n[x];
+
+                            if (_ID in n) {
+                                // Change OP to OP_ID
+                                o[OP] = OP_ID;
+                                // Update RAW to _ID and TEXT to escaped version of RAW
+                                o[TEXT] = (o[RAW] = n[_ID]).replace(RE_RAW, TO_TEXT);
+                                // Set RESOLVED if we're not collapsed or expired
+                                o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n) || n[_EXPIRES] > now;
+                            }
+                            else {
+                                o[RESOLVED] = true;
+                            }
                         }
                         else {
                             // Reset current node and RESOLVED
@@ -199,17 +205,17 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 
                     case OP_PATH :
                         // Get e from r
-                        e = r[ESCAPED];
+                        x = r[RAW];
 
                         // Set current node
-                        n = cache[e];
+                        n = cache[x];
 
                         // Change OP to OP_ID
                         o[OP] = OP_ID;
 
                         // Copy properties from r
                         o[TEXT] = r[TEXT];
-                        o[ESCAPED] = e;
+                        o[RAW] = x;
                         o[RESOLVED] = r[RESOLVED];
                         break;
                 }
