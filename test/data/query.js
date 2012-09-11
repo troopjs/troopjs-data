@@ -16,7 +16,8 @@ buster.testCase("troopjs-ef/data/query", function (run) {
 
                     assert.equals(ast, [{
                         "op" : "!",
-                        "text" : "test!123"
+                        "text" : "test!123",
+                        "normalized" : "test!123"
                     }]);
                 },
 
@@ -25,10 +26,12 @@ buster.testCase("troopjs-ef/data/query", function (run) {
 
                     assert.equals(ast, [{
                         "op" : "!",
-                        "text" : "test!123"
+                        "text" : "test!123",
+                        "normalized" : "test!123"
                     }, {
                         "op" : "!",
-                        "text" : "xxx!321"
+                        "text" : "xxx!321",
+                        "normalized" : "xxx!321"
                     }]);
                 },
 
@@ -37,10 +40,12 @@ buster.testCase("troopjs-ef/data/query", function (run) {
 
                     assert.equals(ast, [{
                         "op" : "!",
-                        "text" : "test!123"
+                        "text" : "test!123",
+                        "normalized" : "test!123"
                     }, {
                         "op" : ".",
-                        "text" : "p1"
+                        "text" : "p1",
+                        "normalized" : "p1"
                     }]);
                 },
 
@@ -49,13 +54,16 @@ buster.testCase("troopjs-ef/data/query", function (run) {
 
                     assert.equals(ast, [{
                         "op" : "!",
-                        "text" : "test!123"
+                        "text" : "test!123",
+                        "normalized" : "test!123"
                     }, {
                         "op" : ".",
-                        "text" : "p1"
+                        "text" : "p1",
+                        "normalized" : "p1"
                     }, {
                         "op" : ".",
-                        "text" : "p2"
+                        "text" : "p2",
+                        "normalized" : "p2"
                     }]);
                 },
 
@@ -64,16 +72,20 @@ buster.testCase("troopjs-ef/data/query", function (run) {
 
                     assert.equals(ast, [{
                         "op" : "!",
-                        "text" : "test!123"
+                        "text" : "test!123",
+                        "normalized" : "test!123"
                     }, {
                         "op" : ".",
-                        "text" : "p1"
+                        "text" : "p1",
+                        "normalized" : "p1"
                     }, {
                         "op" : ",",
-                        "text" : ""
+                        "text" : "",
+                        "normalized" : ""
                     }, {
                         "op" : ".",
-                        "text" : "p2"
+                        "text" : "p2",
+                        "normalized" : "p2"
                     }]);
                 },
 
@@ -82,31 +94,40 @@ buster.testCase("troopjs-ef/data/query", function (run) {
 
                     assert.equals(ast, [{
                         "op" : "!",
-                        "text" : "test!123"
+                        "text" : "test!123",
+                        "normalized" : "test!123"
                     }, {
                         "op" : ".",
-                        "text" : "p1"
+                        "text" : "p1",
+                        "normalized" : "p1"
                     }, {
                         "op" : ",",
-                        "text" : ""
+                        "text" : "",
+                        "normalized" : ""
                     }, {
                         "op" : ".",
-                        "text" : "p2"
+                        "text" : "p2",
+                        "normalized" : "p2"
                     }, {
                         "op" : "!",
-                        "text" : "xxx!321"
+                        "text" : "xxx!321",
+                        "normalized" : "xxx!321"
                     }, {
                         "op" : ".",
-                        "text" : "p3"
+                        "text" : "p3",
+                        "normalized" : "p3"
                     }, {
                         "op" : ".",
-                        "text" : "p4"
+                        "text" : "p4",
+                        "normalized" : "p4"
                     }, {
                         "op" : ",",
-                        "text" : ""
+                        "text" : "",
+                        "normalized" : ""
                     }, {
                         "op" : ".",
-                        "text" : "p5"
+                        "text" : "p5",
+                        "normalized" : "p5"
                     }]);
                 },
 
@@ -115,31 +136,40 @@ buster.testCase("troopjs-ef/data/query", function (run) {
 
                     assert.equals(ast, [{
                         "op" : "!",
-                        "text" : "test!123"
+                        "text" : "test!123",
+                        "normalized" : "test!123"
                     }, {
                         "op" : ".",
-                        "text" : "p1"
+                        "text" : "p1",
+                        "normalized" : "p1"
                     }, {
                         "op" : ",",
-                        "text" : ""
+                        "text" : "",
+                        "normalized" : ""
                     }, {
                         "op" : ".",
-                        "text" : "p2"
+                        "text" : "p2",
+                        "normalized" : "p2"
                     }, {
                         "op" : "!",
-                        "text" : "xxx!321"
+                        "text" : "xxx!321",
+                        "normalized" : "xxx!321"
                     }, {
                         "op" : ".",
-                        "text" : "p3"
+                        "text" : "p3",
+                        "normalized" : "p3"
                     }, {
                         "op" : ".",
-                        "text" : "p4"
+                        "text" : "p4",
+                        "normalized" : "p4"
                     }, {
                         "op" : ",",
-                        "text" : ""
+                        "text" : "",
+                        "normalized" : ""
                     }, {
                         "op" : ".",
-                        "text" : "p5"
+                        "text" : "p5",
+                        "normalized" : "p5"
                     }]);
                 },
 
@@ -148,7 +178,8 @@ buster.testCase("troopjs-ef/data/query", function (run) {
 
                     assert.equals(ast, [{
                         "op" : "!",
-                        "text" : "test!'123 321'"
+                        "text" : "test!'123 321'",
+                        "normalized" : "test!123 321"
                     }]);
                 },
 
@@ -157,16 +188,20 @@ buster.testCase("troopjs-ef/data/query", function (run) {
 
                     assert.equals(ast, [{
                         "op" : "!",
-                        "text" : "test!'123 321'"
+                        "text" : "test!'123 321'",
+                        "normalized" : "test!123 321"
                     }, {
                         "op" : ".",
-                        "text" : "p1"
+                        "text" : "p1",
+                        "normalized" : "p1"
                     }, {
                         "op" : ",",
-                        "text" : ""
+                        "text" : "",
+                        "normalized" : ""
                     }, {
                         "op" : ".",
-                        "text" : "'p2 asd'"
+                        "text" : "'p2 asd'",
+                        "normalized" : "p2 asd"
                     }]);
                 }
             },
@@ -217,6 +252,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!1234",
+                            "normalized" : "test!1234",
                             "resolved" : false
                         }]);
                     },
@@ -233,10 +269,12 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!123",
+                            "normalized" : "test!123",
                             "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p2",
+                            "normalized" : "p2",
                             "resolved" : false
                         }]);
                     },
@@ -253,6 +291,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!xxx",
+                            "normalized" : "test!xxx",
                             "resolved" : false
                         }]);
                     },
@@ -263,10 +302,12 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!123",
+                            "normalized" : "test!123",
                             "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p2",
+                            "normalized" : "p2",
                             "resolved" : false
                         }]);
                     },
@@ -277,22 +318,27 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!321",
+                            "normalized" : "test!321",
                             "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p3",
+                            "normalized" : "p3",
                             "resolved" : false
                         }, {
                             "op" : ".",
                             "text" : "p4",
+                            "normalized" : "p4",
                             "resolved" : false
                         }, {
                             "op" : "!",
                             "text" : "test!123",
+                            "normalized" : "test!123",
                             "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p2",
+                            "normalized" : "p2",
                             "resolved" : false
                         }]);
                     },
@@ -309,14 +355,17 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                         assert.equals(ast, [{
                             "op" : "!",
                             "text" : "test!123",
+                            "normalized" : "test!123",
                             "resolved" : true
                         }, {
                             "op" : ".",
                             "text" : "p2",
+                            "normalized" : "p2",
                             "resolved" : false
                         }, {
                             "op" : "!",
                             "text" : "test!xxx",
+                            "normalized" : "test!xxx",
                             "resolved" : false
                         }]);
                     }
@@ -358,6 +407,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                             assert.equals(ast, [{
                                 "op" : "!",
                                 "text" : "test!321",
+                                "normalized" : "test!321",
                                 "resolved" : false
                             }]);
 
