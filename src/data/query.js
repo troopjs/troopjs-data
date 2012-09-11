@@ -10,7 +10,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
     var OP_QUERY = "|";
     var LENGTH = "length";
     var TEXT = "text";
-    var NORMALIZED = "normalized";
+    var ESCAPED = "escaped";
     var RESOLVED = "resolved";
     var _ID = "id";
     var _EXPIRES = "expires";
@@ -18,7 +18,10 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
     var _AST = "_ast";
     var _QUERY = "_query";
 
-    var RE = /("|')(.*?)\1/;
+    var RE_TEXT = /("|')(.*?)\1/;
+    var TO_ESCAPED = "$2";
+    var RE_ESCAPED = /!(.*[!,|.\s]+.*)/;
+    var TO_TEXT = "!'$1'";
 
     return Component.extend(function Query(query) {
        var me = this;
@@ -77,7 +80,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 
                         // If there's an active op, store TEXT and push on _AST
                         if (o !== UNDEFINED) {
-                            o[NORMALIZED] = (o[TEXT] = query.substring(m, i)).replace(RE, "$2");
+                            o[ESCAPED] = (o[TEXT] = query.substring(m, i)).replace(RE_TEXT, TO_ESCAPED);
                             ast.push(o);
                         }
 
@@ -101,7 +104,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 
                         // If there's an active op, store TEXT and push on _AST
                         if (o !== UNDEFINED) {
-                            o[NORMALIZED] = (o[TEXT] = query.substring(m, i)).replace(RE, "$2");
+                            o[ESCAPED] = (o[TEXT] = query.substring(m, i)).replace(RE_TEXT, TO_ESCAPED);
                             ast.push(o);
                         }
 
@@ -116,7 +119,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 
             // If there's an active op, store TEXT and push on _AST
             if (o !== UNDEFINED) {
-                o[NORMALIZED] = (o[TEXT] = query.substring(m, l)).replace(RE, "$2");
+                o[ESCAPED] = (o[TEXT] = query.substring(m, l)).replace(RE_TEXT, TO_ESCAPED);
                 ast.push(o);
             }
 
@@ -182,8 +185,8 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                             n = n[t];
                             // Change OP to OP_ID
                             o[OP] = OP_ID;
-                            // Update NORMALIZED to _ID TODO Make sure we escape TEXT if neded
-                            o[TEXT] = o[NORMALIZED] = n[_ID];
+                            // Update NORMALIZED to _ID and TEXT to escaped version of NORMALIZED
+                            o[TEXT] = (o[ESCAPED] = n[_ID]).replace(RE_ESCAPED, TO_TEXT);
                             // Set RESOLVED if we're not collapsed or expired
                             o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n) || n[_EXPIRES] > now;
                         }
@@ -206,7 +209,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 
                         // Copy properties from r
                         o[TEXT] = r[TEXT];
-                        o[NORMALIZED] = r[NORMALIZED];
+                        o[ESCAPED] = r[ESCAPED];
                         o[RESOLVED] = r[RESOLVED];
                         break;
                 }
