@@ -184,6 +184,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                             // Set current node
                             n = n[x];
 
+                            // Does the new node ducktype _ID
                             if (_ID in n) {
                                 // Change OP to OP_ID
                                 o[OP] = OP_ID;
