@@ -2,13 +2,16 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
     var UNDEFINED;
     var TRUE = true;
     var FALSE = false;
+    var OBJECT = Object;
+    var ARRAY = Array;
+    var CONSTRUCTOR = "constructor";
+    var LENGTH = "length";
 
     var OP = "op";
     var OP_ID = "!";
     var OP_PROPERTY = ".";
     var OP_PATH = ",";
     var OP_QUERY = "|";
-    var LENGTH = "length";
     var TEXT = "text";
     var RAW = "raw";
     var RESOLVED = "resolved";
@@ -141,6 +144,8 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
             var ast = me[_AST]; // _AST
             var result = [];    // Result
             var i;              // Index
+            var j;
+            var c;
             var l;              // Length
             var o;              // Current operation
             var x;              // Current raw
@@ -184,17 +189,49 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
                             // Set current node
                             n = n[x];
 
-                            // Does the new node ducktype _ID
-                            if (_ID in n) {
+                            // Get constructor
+                            c = n[CONSTRUCTOR];
+
+                            // If the constructor is an array
+                            if (c === ARRAY) {
+                                // Set naive resolved
+                                o[RESOLVED] = TRUE;
+
+                                // Iterate backwards over n
+                                for (j = n[LENGTH]; j-- > 0;) {
+                                    // Get item
+                                    c = n[j];
+
+                                    // If the constructor is not an object
+                                    // or the object does not duck-type _ID
+                                    // or the object is not collapsed
+                                    // and the object does not duck-type _EXPIRES
+                                    // or the objects is not expired
+                                    if (c[CONSTRUCTOR] !== OBJECT
+                                        || !(_ID in c)
+                                        || c[_COLLAPSED] !== TRUE
+                                        && !(_EXPIRES in c)
+                                        || c[_EXPIRES] > now) {
+                                        continue;
+                                    }
+
+                                    // Change RESOLVED
+                                    o[RESOLVED] = FALSE;
+                                    break;
+                                }
+                            }
+                            // If the constructor is _not_ an object or n does not duck-type _ID
+                            else if (c !== OBJECT || !(_ID in n)) {
+                                o[RESOLVED] = TRUE;
+                            }
+                            // We know c _is_ and object and n _does_ duck-type _ID
+                            else {
                                 // Change OP to OP_ID
                                 o[OP] = OP_ID;
                                 // Update RAW to _ID and TEXT to escaped version of RAW
                                 o[TEXT] = (o[RAW] = n[_ID]).replace(RE_RAW, TO_TEXT);
                                 // Set RESOLVED if we're not collapsed or expired
                                 o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n) || n[_EXPIRES] > now;
-                            }
-                            else {
-                                o[RESOLVED] = true;
                             }
                         }
                         else {

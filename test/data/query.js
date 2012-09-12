@@ -230,6 +230,10 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                                 "id" : "test!abc",
                                 "collapsed" : true
                             }],
+                            "py" : [{
+                                "id" : "test!zzz",
+                                "collapsed" : true
+                            }],
                             "p3" : {
                                 "id" : "test!xxx",
                                 "collapsed" : true
@@ -245,7 +249,7 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                             "id" : "test!yyy",
                             "collapsed" : false
                         }, {
-                            "id" : "test:zzz",
+                            "id" : "test!zzz",
                             "collapsed" : false
                         }]);
                     },
@@ -392,6 +396,22 @@ buster.testCase("troopjs-ef/data/query", function (run) {
                             "op" : ".",
                             "text" : "px",
                             "raw" : "px",
+                            "resolved" : false
+                        }]);
+                    },
+
+                    "test!123.py" : function () {
+                        var ast = Query("test!123.py").reduce(this.cache).ast();
+
+                        assert.equals(ast, [{
+                            "op" : "!",
+                            "text" : "test!123",
+                            "raw" : "test!123",
+                            "resolved" : true
+                        }, {
+                            "op" : ".",
+                            "text" : "py",
+                            "raw" : "py",
                             "resolved" : true
                         }]);
                     }
