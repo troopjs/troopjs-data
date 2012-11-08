@@ -118,13 +118,13 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
 
         // Check if we need to move result between generations
         move : {
-            // Break fast if id is NULL or _MAXAGE is missing
-            if (id === NULL || !(_MAXAGE in result)) {
+            // Break fast if id is NULL
+            if (id === NULL) {
                 break move;
             }
 
             // Calculate expiration and floor
-            expires = 0 | now + result[_MAXAGE];
+            expires = 0 | now + (result[_MAXAGE] || 0);
 
             remove : {
                 // Fail fast if there is no old expiration
