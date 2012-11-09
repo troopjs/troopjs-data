@@ -124,7 +124,8 @@ define( [ "../component/gadget" ], function CacheModule(Gadget) {
             }
 
             // Calculate expiration and floor
-            expires = 0 | now + (result[_MAXAGE] || 0);
+            // '>>>' means convert anything other than posiitive integer into 0
+            expires = 0 | now + (result[_MAXAGE] >>> 0);
 
             remove : {
                 // Fail fast if there is no old expiration
