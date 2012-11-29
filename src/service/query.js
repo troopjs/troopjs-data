@@ -1,4 +1,3 @@
-	var UNDEFINED;
 define([ "troopjs-core/component/service", "../data/query", "troopjs-core/pubsub/topic", "troopjs-utils/deferred", "troopjs-utils/merge" ], function QueryServiceModule(Service, Query, Topic, Deferred, merge) {
 	var ARRAY_PROTO = Array.prototype;
 	var SLICE = ARRAY_PROTO.slice;
@@ -181,7 +180,7 @@ define([ "troopjs-core/component/service", "../data/query", "troopjs-core/pubsub
 						// If this op is not resolved
 						if (!ast[j][RESOLVED]) {
 							//  Add string version of reduced query to q
-							PUSH.call(q, query.rewrite())
+							PUSH.call(q, query.rewrite());
 							break;
 						}
 					}
