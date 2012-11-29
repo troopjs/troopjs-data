@@ -1,4 +1,4 @@
-define( [ "../component/gadget" ], function CacheModule(Gadget) {
+define( [ "troopjs-core/component/gadget" ], function CacheModule(Gadget) {
 	var UNDEFINED;
 	var FALSE = false;
 	var NULL = null;
