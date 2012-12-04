@@ -1,8 +1,8 @@
-buster.testCase("troopjs-ef/data/query", function (run) {
+buster.testCase("troopjs-data/data/query", function (run) {
     var UNDEFINED;
     var assert = buster.assert;
 
-    require( [ "troopjs-ef/data/query", "troopjs-ef/data/cache" ] , function (Query, Cache) {
+    require( [ "troopjs-data/data/query", "troopjs-data/data/cache" ] , function (Query, Cache) {
         run({
             "parse" : {
                 "UNDEFINED" : function() {

@@ -1,8 +1,8 @@
-buster.testCase("troopjs-ef/data/cache", function (run) {
+buster.testCase("troopjs-data/data/cache", function (run) {
     var assert = buster.assert;
     var refute = buster.assertions.refute;
 
-    require( [ "troopjs-ef/data/cache" ] , function (Cache) {
+    require( [ "troopjs-data/data/cache" ] , function (Cache) {
         run({
             "setUp" : function () {
                 // Create cache with 1 second generations
