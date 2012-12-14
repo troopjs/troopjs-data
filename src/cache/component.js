@@ -198,18 +198,20 @@ define( [ "troopjs-core/component/gadget" ], function CacheModule(Gadget) {
 		me[AGE] = age || (60 * SECOND);
 		me[GENERATIONS] = {};
 	}, {
-		"displayName" : "ef/data/cache",
+		"displayName" : "data/data/cache",
 
-		"sig/start" : function onStart(signal, deferred) {
+		"sig/start" : function start() {
 			var self = this;
 			var generations = self[GENERATIONS];
 
 			// Create new sweep interval
-			self[INTERVAL] = setInterval(function sweep() {
+			self[INTERVAL] = INTERVAL in self
+				? self[INTERVAL]
+				: setInterval(function sweep() {
 				// Calculate expiration of this generation
 				var expires = 0 | new Date().getTime() / SECOND;
 
-				var property = NULL;
+				var property;
 				var current;
 
 				// Get head
@@ -246,29 +248,24 @@ define( [ "troopjs-core/component/gadget" ], function CacheModule(Gadget) {
 				// Reset head
 				generations[HEAD] = current;
 			}, self[AGE]);
-
-			if (deferred) {
-				deferred.resolve();
-			}
 		},
 
-		"sig/stop" : function onStop(signal, deferred) {
+		"sig/stop" : function stop() {
 			var self = this;
-			var property = NULL;
 
-			// Clear sweep interval (if it exists)
+			// Only do this if we have an interval
 			if (INTERVAL in self) {
+				// Clear interval
 				clearInterval(self[INTERVAL]);
-			}
 
-			if (deferred) {
-				deferred.resolve();
+				// Reset interval
+				delete self[INTERVAL];
 			}
 		},
 
-		"sig/finalize" : function onFinalize(signal, deferred) {
+		"sig/finalize" : function finalize() {
 			var self = this;
-			var property = NULL;
+			var property;
 
 			// Iterate all properties on self
 			for (property in self) {
@@ -280,10 +277,6 @@ define( [ "troopjs-core/component/gadget" ], function CacheModule(Gadget) {
 				// Delete from self (cache)
 				delete self[property];
 			}
-
-			if (deferred) {
-				deferred.resolve();
-			}
 		},
 
 		/**
@@ -291,7 +284,7 @@ define( [ "troopjs-core/component/gadget" ], function CacheModule(Gadget) {
 		 * @param node Node to add (object || array)
 		 * @returns Cached node (if it existed in the cache before), otherwise the node sent in
 		 */
-		put : function put(node) {
+		"put" : function put(node) {
 			var self = this;
 
 			// Get constructor of node (safely, falling back to UNDEFINED)

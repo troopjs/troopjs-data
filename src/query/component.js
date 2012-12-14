@@ -27,20 +27,20 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 	var TO_TEXT = "!'$1'";
 
 	return Component.extend(function Query(query) {
-		var me = this;
+		var self = this;
 
 		if (query !== UNDEFINED) {
-			me[_QUERY] = query;
+			self[_QUERY] = query;
 		}
 	}, {
-		parse : function parse(query) {
-			var me = this;
+		"parse" : function parse(query) {
+			var self = this;
 
 			// Reset _AST
-			delete me[_AST];
+			delete self[_AST];
 
 			// Set _QUERY
-			query = me[_QUERY] = (query || me[_QUERY] || "");
+			query = self[_QUERY] = (query || self[_QUERY] || "");
 
 			var i;          // Index
 			var l;          // Length
@@ -127,21 +127,21 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 			}
 
 			// Set _AST
-			me[_AST] = ast;
+			self[_AST] = ast;
 
-			return me;
+			return self;
 	   },
 
-		reduce : function reduce(cache) {
-			var me = this;
+		"reduce" : function reduce(cache) {
+			var self = this;
 			var now = 0 | new Date().getTime() / 1000;
 
 			// If we're not parsed - parse
-			if (!(_AST in me)) {
-				me.parse();
+			if (!(_AST in self)) {
+				self.parse();
 			}
 
-			var ast = me[_AST]; // _AST
+			var ast = self[_AST]; // _AST
 			var result = [];    // Result
 			var i;              // Index
 			var j;
@@ -284,31 +284,31 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 			}
 
 			// Update _AST
-			me[_AST] = result;
+			self[_AST] = result;
 
-			return me;
+			return self;
 		},
 
-		ast : function ast() {
-			var me = this;
+		"ast" : function ast() {
+			var self = this;
 
 			// If we're not parsed - parse
-			if (!(_AST in me)) {
-				me.parse();
+			if (!(_AST in self)) {
+				self.parse();
 			}
 
-			return me[_AST];
+			return self[_AST];
 		},
 
-		rewrite : function rewrite() {
-			var me = this;
+		"rewrite" : function rewrite() {
+			var self = this;
 
 			// If we're not parsed - parse
-			if (!(_AST in me)) {
-				me.parse();
+			if (!(_AST in self)) {
+				self.parse();
 			}
 
-			var ast = me[_AST]; // AST
+			var ast = self[_AST]; // AST
 			var result = "";    // Result
 			var l;              // Current length
 			var i;              // Current index
