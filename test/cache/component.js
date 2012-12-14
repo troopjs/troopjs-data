@@ -4,15 +4,21 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 
 	require( [ "troopjs-data/cache/component" ] , function (Cache) {
 		run({
-			"setUp" : function () {
+			"setUp" : function (done) {
 				// Create cache with 1 second generations
 				var cache = this.cache = Cache(1000);
-				cache.start();
+
+				cache.start().then(done);
 			},
 
-			"tearDown" : function () {
-				this.cache.stop();
-				delete this.cache;
+			"tearDown" : function (done) {
+				var self = this;
+
+				self.cache.stop().then(function () {
+					delete self.cache;
+
+					done();
+				});
 			},
 
 			"with emty cache" : {

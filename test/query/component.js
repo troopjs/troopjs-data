@@ -207,12 +207,20 @@ buster.testCase("troopjs-data/query/component", function (run) {
 			},
 
 			"reduce" : {
-				"setUp" : function () {
-					this.cache = Cache();
+				"setUp" : function (done) {
+					var cache = this.cache = Cache();
+
+					cache.start().then(done);
 				},
 
-				"tearDown" : function () {
-					delete this.cache;
+				"tearDown" : function (done) {
+					var self = this;
+
+					self.cache.stop().then(function () {
+						delete self.cache;
+
+						done();
+					})
 				},
 
 				"with static data" : {
@@ -419,7 +427,7 @@ buster.testCase("troopjs-data/query/component", function (run) {
 
 				"with maxAged data" : {
 					"setUp" : function () {
-						this.cache.start().put([{
+						this.cache.put([{
 							"id" : "test!123",
 							"maxAge" : 2,
 							"p1" : {
@@ -438,10 +446,6 @@ buster.testCase("troopjs-data/query/component", function (run) {
 								"collapsed" : true
 							}
 						}]);
-					},
-
-					"tearDown" : function () {
-						this.cache.stop();
 					},
 
 					"test!123|test!321" : function (done) {
@@ -466,7 +470,7 @@ buster.testCase("troopjs-data/query/component", function (run) {
 			},
 
 			"rewrite" : {
-				"setUp" : function () {
+				"setUp" : function (done) {
 					var cache = this.cache = Cache();
 
 					cache.put([{
@@ -491,10 +495,18 @@ buster.testCase("troopjs-data/query/component", function (run) {
 						"id" : "test!yyy",
 						"collapsed" : false
 					}]);
+
+					cache.start().then(done);
 				},
 
-				"tearDown" : function () {
-					delete this.cache;
+				"tearDown" : function (done) {
+					var self = this;
+
+					self.cache.stop().then(function () {
+						delete self.cache;
+
+						done();
+					});
 				},
 
 				"test!123" : function () {
