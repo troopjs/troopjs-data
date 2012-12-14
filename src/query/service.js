@@ -21,7 +21,7 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 		self[BATCHES] = [];
 		self[CACHE] = cache;
 	}, {
-		"displayName" : "data/service/query",
+		"displayName" : "data/query/service",
 
 		"sig/start" : function start() {
 			var self = this;

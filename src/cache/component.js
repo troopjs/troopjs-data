@@ -198,7 +198,7 @@ define( [ "troopjs-core/component/gadget" ], function CacheModule(Gadget) {
 		me[AGE] = age || (60 * SECOND);
 		me[GENERATIONS] = {};
 	}, {
-		"displayName" : "data/data/cache",
+		"displayName" : "data/cache/component",
 
 		"sig/start" : function start() {
 			var self = this;

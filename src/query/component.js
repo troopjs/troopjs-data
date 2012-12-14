@@ -33,6 +33,8 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 			self[_QUERY] = query;
 		}
 	}, {
+		"displayName" : "data/query/component",
+
 		"parse" : function parse(query) {
 			var self = this;
 
