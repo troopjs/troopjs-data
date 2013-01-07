@@ -227,6 +227,8 @@ buster.testCase("troopjs-data/query/component", function (run) {
 					"setUp" : function () {
 						this.cache.put([{
 							"id" : "test!123",
+							"collapsed" : false,
+							"maxAge" : 10,
 							"p1" : {
 								"id" : "test!321",
 								"collapsed" : true
@@ -249,16 +251,19 @@ buster.testCase("troopjs-data/query/component", function (run) {
 						}, {
 							"id" : "test!321",
 							"collapsed" : false,
+							"maxAge" : 10,
 							"p2" : {
 								"id" : "test!yyy",
 								"collapsed" : true
 							}
 						}, {
 							"id" : "test!yyy",
-							"collapsed" : false
+							"collapsed" : false,
+							"maxAge" : 10
 						}, {
 							"id" : "test!zzz",
-							"collapsed" : false
+							"collapsed" : false,
+							"maxAge" : 10
 						}]);
 					},
 
@@ -476,6 +481,7 @@ buster.testCase("troopjs-data/query/component", function (run) {
 					cache.put([{
 						"id" : "test!123",
 						"collapsed" : false,
+						"maxAge" : 10,
 						"p1" : {
 							"id" : "test!321",
 							"collapsed" : true
@@ -487,13 +493,15 @@ buster.testCase("troopjs-data/query/component", function (run) {
 					}, {
 						"id" : "test!321",
 						"collapsed" : false,
+						"maxAge" : 10,
 						"p2" : {
 							"id" : "test!yyy",
 							"collapsed" : true
 						}
 					}, {
 						"id" : "test!yyy",
-						"collapsed" : false
+						"collapsed" : false,
+						"maxAge" : 10
 					}]);
 
 					cache.start().then(done);
