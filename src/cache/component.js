@@ -1,4 +1,12 @@
+/*!
+ * TroopJS Data cache component
+ * @license TroopJS Copyright 2013, Mikael Karon <mikael@karon.se>
+ * Released under the MIT license.
+ */
+/*global define:false */
 define( [ "troopjs-core/component/gadget" ], function CacheModule(Gadget) {
+	/*jshint laxbreak:true */
+
 	var UNDEFINED;
 	var FALSE = false;
 	var NULL = null;
@@ -171,7 +179,7 @@ define( [ "troopjs-core/component/gadget" ], function CacheModule(Gadget) {
 				}
 
 				// Step through list as long as there is a next, and expiration is "older" than the next expiration
-				for (current = head = generations[HEAD]; next = current[NEXT], next !== UNDEFINED && next[EXPIRES] < expires; current = next);
+				for (current = head = generations[HEAD]; (next = current[NEXT]) !== UNDEFINED && next[EXPIRES] < expires; current = next);
 
 				// Check if we're still on the head and if we're younger
 				if (current === head && current[EXPIRES] > expires) {
@@ -243,7 +251,7 @@ define( [ "troopjs-core/component/gadget" ], function CacheModule(Gadget) {
 					delete generations[current[EXPIRES]];
 				}
 				// While there's a next
-				while (current = current[NEXT]);
+				while ((current = current[NEXT]));
 
 				// Reset head
 				generations[HEAD] = current;

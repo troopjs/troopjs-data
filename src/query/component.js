@@ -1,4 +1,12 @@
+/*!
+ * TroopJS Data query component
+ * @license TroopJS Copyright 2013, Mikael Karon <mikael@karon.se>
+ * Released under the MIT license.
+ */
+/*global define:false */
 define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
+	/*jshint laxbreak:true */
+
 	var UNDEFINED;
 	var TRUE = true;
 	var FALSE = false;
@@ -132,7 +140,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 			self[_AST] = ast;
 
 			return self;
-	   },
+		},
 
 		"reduce" : function reduce(cache) {
 			var self = this;

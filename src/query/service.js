@@ -1,4 +1,12 @@
+/*!
+ * TroopJS Data query service
+ * @license TroopJS Copyright 2013, Mikael Karon <mikael@karon.se>
+ * Released under the MIT license.
+ */
+/*global define:false */
 define([ "module", "troopjs-core/component/service", "./component", "troopjs-core/pubsub/topic", "when", "troopjs-utils/merge" ], function QueryServiceModule(module, Service, Query, Topic, when, merge) {
+	/*jshint laxbreak:true */
+
 	var ARRAY_PROTO = Array.prototype;
 	var SLICE = ARRAY_PROTO.slice;
 	var CONCAT = ARRAY_PROTO.concat;
@@ -126,7 +134,7 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 			}
 		},
 
-		"hub/query" : function query(topic /* query, query, query, .., */) {
+		"hub/query" : function hubQuery(topic /* query, query, query, .., */) {
 			var self = this;
 			var batches = self[BATCHES];
 			var cache = self[CACHE];
