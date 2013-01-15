@@ -1,7 +1,6 @@
-/*!
+/**
  * TroopJS Data cache component
- * @license TroopJS Copyright 2013, Mikael Karon <mikael@karon.se>
- * Released under the MIT license.
+ * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
 /*global define:false */
 define( [ "troopjs-core/component/gadget" ], function CacheModule(Gadget) {
