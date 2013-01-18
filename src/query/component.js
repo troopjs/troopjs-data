@@ -1,7 +1,6 @@
-/*!
- * TroopJS Data query component
- * @license TroopJS Copyright 2013, Mikael Karon <mikael@karon.se>
- * Released under the MIT license.
+/**
+ * TroopJS data/query/component
+ * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
 /*global define:false */
 define( [ "troopjs-core/component/base" ], function QueryModule(Component) {

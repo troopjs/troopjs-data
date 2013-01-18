@@ -1,7 +1,6 @@
-/*!
- * TroopJS Data query service
- * @license TroopJS Copyright 2013, Mikael Karon <mikael@karon.se>
- * Released under the MIT license.
+/**
+ * TroopJS data/query/service
+ * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
 /*global define:false */
 define([ "module", "troopjs-core/component/service", "./component", "troopjs-core/pubsub/topic", "when", "troopjs-utils/merge" ], function QueryServiceModule(module, Service, Query, Topic, when, merge) {
