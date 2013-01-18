@@ -3,7 +3,7 @@
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
 /*global define:false */
-define( [ "troopjs-core/component/gadget" ], function CacheModule(Gadget) {
+define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 	/*jshint laxbreak:true */
 
 	var UNDEFINED;
@@ -199,7 +199,7 @@ define( [ "troopjs-core/component/gadget" ], function CacheModule(Gadget) {
 		return result;
 	}
 
-	return Gadget.extend(function (age) {
+	return Component.extend(function (age) {
 		var me = this;
 
 		me[AGE] = age || (60 * SECOND);
