@@ -22,7 +22,7 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 	var Q = "q";
 	var CONFIG = module.config();
 
-	var QueryService = Service.extend(function (cache) {
+	var QueryService = Service.extend(function QueryService(cache) {
 		var self = this;
 
 		self[BATCHES] = [];

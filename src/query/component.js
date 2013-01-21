@@ -33,7 +33,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 	var RE_RAW = /!(.*[!,|.\s]+.*)/;
 	var TO_TEXT = "!'$1'";
 
-	return Component.extend(function Query(query) {
+	return Component.extend(function QueryComponent(query) {
 		var self = this;
 
 		if (query !== UNDEFINED) {

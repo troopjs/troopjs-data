@@ -199,7 +199,7 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 		return result;
 	}
 
-	return Component.extend(function (age) {
+	return Component.extend(function CacheComponent(age) {
 		var me = this;
 
 		me[AGE] = age || (60 * SECOND);
