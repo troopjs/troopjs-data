@@ -7,8 +7,8 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 	/*jshint laxbreak:true */
 
 	var ARRAY_PROTO = Array.prototype;
-	var SLICE = ARRAY_PROTO.slice;
-	var CONCAT = ARRAY_PROTO.concat;
+	var ARRAY_SLICE = ARRAY_PROTO.slice;
+	var ARRAY_CONCAT = ARRAY_PROTO.concat;
 	var PUSH = ARRAY_PROTO.push;
 	var LENGTH = "length";
 	var BATCHES = "batches";
@@ -151,7 +151,7 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 
 			try {
 				// Slice and flatten queries
-				queries = CONCAT.apply(ARRAY_PROTO, SLICE.call(arguments, 1));
+				queries = ARRAY_CONCAT.apply(ARRAY_PROTO, ARRAY_SLICE.call(arguments, 1));
 
 				// Iterate queries
 				for (i = 0, iMax = queries[LENGTH]; i < iMax; i++) {
