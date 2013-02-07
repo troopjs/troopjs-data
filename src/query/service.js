@@ -6,6 +6,7 @@
 define([ "module", "troopjs-core/component/service", "./component", "troopjs-core/pubsub/topic", "when", "troopjs-utils/merge" ], function QueryServiceModule(module, Service, Query, Topic, when, merge) {
 	/*jshint laxbreak:true */
 
+	var UNDEFINED;
 	var ARRAY_PROTO = Array.prototype;
 	var ARRAY_SLICE = ARRAY_PROTO.slice;
 	var ARRAY_CONCAT = ARRAY_PROTO.concat;
@@ -24,6 +25,10 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 
 	var QueryService = Service.extend(function QueryService(cache) {
 		var self = this;
+
+		if (cache === UNDEFINED) {
+			throw new Error("No cache provided");
+		}
 
 		self[BATCHES] = [];
 		self[CACHE] = cache;
