@@ -31,11 +31,11 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 	/**
 	 * Internal method to put a node in the cache
 	 * @param node Node
-	 * @param constructor Constructor of value
+	 * @param _constructor Constructor of value
 	 * @param now Current time (seconds)
 	 * @returns Cached node
 	 */
-	function _put(node, constructor, now) {
+	function _put(node, _constructor, now) {
 		var self = this;
 		var result;
 		var id;
@@ -78,27 +78,27 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 		// We have to deep traverse the graph before we do any expiration (as more data for this object can be available)
 
 		// Check that this is an ARRAY
-		if (constructor === ARRAY) {
+		if (_constructor === ARRAY) {
 			// Index all values
 			for (i = 0, iMax = node[LENGTH]; i < iMax; i++) {
 
 				// Keep value
 				value = node[i];
 
-				// Get constructor of value (safely, falling back to UNDEFINED)
-				constructor = value === NULL || value === UNDEFINED
+				// Get _constructor of value (safely, falling back to UNDEFINED)
+				_constructor = value === NULL || value === UNDEFINED
 					? UNDEFINED
 					: value[CONSTRUCTOR];
 
 				// Do magic comparison to see if we recursively put this in the cache, or plain put
-				result[i] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0)
-					? _put.call(self, value, constructor, now)
+				result[i] = (_constructor === OBJECT || _constructor === ARRAY && value[LENGTH] !== 0)
+					? _put.call(self, value, _constructor, now)
 					: value;
 			}
 		}
 
 		// Check that this is an OBJECT
-		else if (constructor === OBJECT) {
+		else if (_constructor === OBJECT) {
 			// Index all properties
 			for (property in node) {
 				// Except the _ID property
@@ -111,14 +111,14 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 				// Keep value
 				value = node[property];
 
-				// Get constructor of value (safely, falling back to UNDEFINED)
-				constructor = value === NULL || value === UNDEFINED
+				// Get _constructor of value (safely, falling back to UNDEFINED)
+				_constructor = value === NULL || value === UNDEFINED
 					? UNDEFINED
 					: value[CONSTRUCTOR];
 
 				// Do magic comparison to see if we recursively put this in the cache, or plain put
-				result[property] = (constructor === OBJECT || constructor === ARRAY && value[LENGTH] !== 0)
-					? _put.call(self, value, constructor, now)
+				result[property] = (_constructor === OBJECT || _constructor === ARRAY && value[LENGTH] !== 0)
+					? _put.call(self, value, _constructor, now)
 					: value;
 			}
 		}
@@ -294,14 +294,14 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 		"put" : function put(node) {
 			var self = this;
 
-			// Get constructor of node (safely, falling back to UNDEFINED)
-			var constructor = node === NULL || node === UNDEFINED
+			// Get _constructor of node (safely, falling back to UNDEFINED)
+			var _constructor = node === NULL || node === UNDEFINED
 				? UNDEFINED
 				: node[CONSTRUCTOR];
 
 			// Do magic comparison to see if we should cache this object
-			return constructor === OBJECT || constructor === ARRAY && node[LENGTH] !== 0
-				? _put.call(self, node, constructor, 0 | new Date().getTime() / SECOND)
+			return _constructor === OBJECT || _constructor === ARRAY && node[LENGTH] !== 0
+				? _put.call(self, node, _constructor, 0 | new Date().getTime() / SECOND)
 				: node;
 		}
 	});
