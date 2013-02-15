@@ -18,12 +18,13 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 	var TOPIC = "topic";
 	var QUERIES = "queries";
 	var RESOLVED = "resolved";
+	var CONFIGURATION = "configuration";
 	var RAW = "raw";
 	var ID = "id";
 	var Q = "q";
-	var CONFIG = module.config();
+	var MODULE_CONFIG = module.config();
 
-	var QueryService = Service.extend(function QueryService(cache) {
+	return Service.extend(function QueryService(cache) {
 		var self = this;
 
 		if (cache === UNDEFINED) {
@@ -32,6 +33,8 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 
 		self[BATCHES] = [];
 		self[CACHE] = cache;
+
+		self.configure(MODULE_CONFIG);
 	}, {
 		"displayName" : "data/query/service",
 
@@ -75,7 +78,7 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 						"data": {
 							"q": q.join("|")
 						}
-					}, CONFIG));
+					}, self[CONFIGURATION]));
 				}
 
 				function done(data) {
@@ -218,10 +221,4 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 			return batch.promise;
 		}
 	});
-
-	QueryService.config = function config(_config) {
-		return merge.call(CONFIG, _config);
-	};
-
-	return QueryService;
 });
