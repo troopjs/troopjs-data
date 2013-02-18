@@ -3,7 +3,7 @@
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
 /*global define:false */
-define([ "module", "troopjs-core/component/service", "./component", "troopjs-core/pubsub/topic", "when", "troopjs-utils/merge" ], function QueryServiceModule(module, Service, Query, Topic, when, merge) {
+define([ "module", "troopjs-core/component/service", "./component", "when", "troopjs-utils/merge" ], function QueryServiceModule(module, Service, Query, when, merge) {
 	/*jshint laxbreak:true */
 
 	var UNDEFINED;
@@ -58,7 +58,6 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 
 				function request() {
 					var q = [];
-					var topics = [];
 					var batch;
 					var i;
 
@@ -66,15 +65,12 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 					for (i = batches[LENGTH]; i--;) {
 						batch = batches[i];
 
-						// Add batch[TOPIC] to topics
-						PUSH.call(topics, batch[TOPIC]);
-
 						// Add batch[Q] to q
 						PUSH.apply(q, batch[Q]);
 					}
 
 					// Publish ajax
-					return self.publish(Topic("ajax", self, topics), merge.call({
+					return self.publish("ajax", merge.call({
 						"data": {
 							"q": q.join("|")
 						}
@@ -124,7 +120,7 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 				}
 
 				// Request and handle response
-				return request().then(done, fail);
+				request().then(done, fail);
 			}, 200);
 		},
 
@@ -155,7 +151,8 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 			var query;
 
 			// Create deferred batch
-			var batch = when.defer();
+			var deferred = when.defer();
+			var resolver = deferred.resolver;
 
 			try {
 				// Slice and flatten queries
@@ -199,26 +196,25 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 						}
 					}
 
-					// Resolve batch
-					batch.resolve(queries);
+					// Resolve batch resolver
+					resolver.resolve(queries);
 				}
 				else {
 					// Store properties on batch
-					batch[TOPIC] = topic;
-					batch[QUERIES] = queries;
-					batch[ID] = id;
-					batch[Q] = q;
+					resolver[QUERIES] = queries;
+					resolver[ID] = id;
+					resolver[Q] = q;
 
 					// Add batch to batches
-					batches.push(batch);
+					batches.push(resolver);
 				}
 			}
 			catch (e) {
-				batch.reject(e);
+				resolver.reject(e);
 			}
 
 			// Return promise
-			return batch.promise;
+			return deferred.promise;
 		}
 	});
 });
