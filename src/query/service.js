@@ -15,6 +15,7 @@ define([ "module", "troopjs-core/component/service", "./component", "when", "tro
 	var BATCHES = "batches";
 	var INTERVAL = "interval";
 	var CACHE = "cache";
+	var QUERY = "query";
 	var TOPIC = "topic";
 	var QUERIES = "queries";
 	var RESOLVED = "resolved";
@@ -151,8 +152,12 @@ define([ "module", "troopjs-core/component/service", "./component", "when", "tro
 			var query;
 
 			// Create deferred batch
+			var ret = when.defer();
 			var deferred = when.defer();
 			var resolver = deferred.resolver;
+
+			// resolve ret when deferred is done
+			ret.resolver.resolve(deferred.promise);
 
 			try {
 				// Slice and flatten queries
@@ -214,7 +219,14 @@ define([ "module", "troopjs-core/component/service", "./component", "when", "tro
 			}
 
 			// Return promise
-			return deferred.promise;
+			return ret
+				.promise
+				.spread(function(){
+					// add topic to be the first argument
+					var args = ARRAY_SLICE.call(arguments, 0);
+					args.unshift(QUERY);
+					return args;
+				});
 		}
 	});
 });
