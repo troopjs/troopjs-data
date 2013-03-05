@@ -137,7 +137,7 @@ define([ "module", "troopjs-core/component/service", "./component", "when", "tro
 			}
 		},
 
-		"hub/query" : function hubQuery(topic /* query, query, query, .., */) {
+		"hub/query" : function hubQuery(/* query, query, query, .., */) {
 			var self = this;
 			var batches = self[BATCHES];
 			var cache = self[CACHE];
@@ -156,7 +156,7 @@ define([ "module", "troopjs-core/component/service", "./component", "when", "tro
 
 			try {
 				// Slice and flatten queries
-				queries = ARRAY_CONCAT.apply(ARRAY_PROTO, ARRAY_SLICE.call(arguments, 1));
+				queries = ARRAY_CONCAT.apply(ARRAY_PROTO, ARRAY_SLICE.call(arguments));
 
 				// Iterate queries
 				for (i = 0, iMax = queries[LENGTH]; i < iMax; i++) {
