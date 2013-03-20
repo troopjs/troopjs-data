@@ -3,19 +3,18 @@
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
 /*global define:false */
-define([ "module", "troopjs-core/component/service", "./component", "when", "troopjs-utils/merge" ], function QueryServiceModule(module, Service, Query, when, merge) {
+define([ "module", "troopjs-core/component/service", "./component", "troopjs-utils/merge", "when", "when/apply" ], function QueryServiceModule(module, Service, Query, merge, when, apply) {
 	/*jshint laxbreak:true */
 
 	var UNDEFINED;
 	var ARRAY_PROTO = Array.prototype;
 	var ARRAY_SLICE = ARRAY_PROTO.slice;
 	var ARRAY_CONCAT = ARRAY_PROTO.concat;
-	var PUSH = ARRAY_PROTO.push;
+	var ARRAY_PUSH = ARRAY_PROTO.push;
 	var LENGTH = "length";
 	var BATCHES = "batches";
 	var INTERVAL = "interval";
 	var CACHE = "cache";
-	var TOPIC = "topic";
 	var QUERIES = "queries";
 	var RESOLVED = "resolved";
 	var CONFIGURATION = "configuration";
@@ -58,15 +57,12 @@ define([ "module", "troopjs-core/component/service", "./component", "when", "tro
 
 				function request() {
 					var q = [];
-					var batch;
 					var i;
 
 					// Iterate batches
 					for (i = batches[LENGTH]; i--;) {
-						batch = batches[i];
-
 						// Add batch[Q] to q
-						PUSH.apply(q, batch[Q]);
+						ARRAY_PUSH.apply(q, batches[i][Q]);
 					}
 
 					// Publish ajax
@@ -120,7 +116,7 @@ define([ "module", "troopjs-core/component/service", "./component", "when", "tro
 				}
 
 				// Request and handle response
-				request().then(done, fail);
+				request().then(apply(done), fail);
 			}, 200);
 		},
 
@@ -180,7 +176,7 @@ define([ "module", "troopjs-core/component/service", "./component", "when", "tro
 						// If this op is not resolved
 						if (!ast[j][RESOLVED]) {
 							// Add rewritten (and reduced) query to q
-							PUSH.call(q, query.rewrite());
+							ARRAY_PUSH.call(q, query.rewrite());
 							break;
 						}
 					}
