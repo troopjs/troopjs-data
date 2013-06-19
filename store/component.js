@@ -17,7 +17,7 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 	var BEFORE_GET = "beforeGet";
 	var AFTER_PUT = "afterPut";
 	var CLEAR = "clear";
-	var LOCK = "lock";
+	var LOCKS = "locks";
 
 	/**
 	 * Applies method to this (if it exists)
@@ -157,13 +157,26 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 
 		self[ADAPTERS] = ARRAY_SLICE.call(arguments);
 		self[STORAGE] = {};
+		self[LOCKS] = {};
 	}, {
 		"displayName" : "data/store/component",
 
-		"ready" : function ready(onFulfilled, onRejected, onProgress) {
-			var self = this;
+		/**
+		 * Waits for store to be "locked"
+		 * @param {string} key Key
+		 * @param {function} [onFulfilled] onFulfilled callback
+		 * @param {function} [onRejected] onRejected callback
+		 * @param {function} [onProgress] onProgress callback
+		 * @returns {Promise} Promise of ready
+		 */
+		"lock" : function (key, onFulfilled, onRejected, onProgress) {
+			var locks = this[LOCKS];
 
-			return self[LOCK] = when(self[LOCK], onFulfilled, onRejected, onProgress);
+			if (OBJECT_TOSTRING.call(key) !== TOSTRING_STRING) {
+				throw new Error("key has to be of type string");
+			}
+
+			return locks[key] = when(locks[key], onFulfilled, onRejected, onProgress);
 		},
 
 		/**
