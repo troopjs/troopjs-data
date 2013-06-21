@@ -2,9 +2,8 @@
  * TroopJS data/cache/component
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-/*global define:false */
 define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
-	/*jshint laxbreak:true */
+	"use strict";
 
 	var UNDEFINED;
 	var FALSE = false;
@@ -36,6 +35,7 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 	 * @returns Cached node
 	 */
 	function _put(node, _constructor, now) {
+		/*jshint validthis:true, forin:false, curly:false, -W086*/
 		var self = this;
 		var result;
 		var id;
@@ -215,6 +215,7 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 			self[INTERVAL] = INTERVAL in self
 				? self[INTERVAL]
 				: setInterval(function sweep() {
+				/*jshint forin:false*/
 				// Calculate expiration of this generation
 				var expires = 0 | new Date().getTime() / SECOND;
 
@@ -271,6 +272,7 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 		},
 
 		"sig/finalize" : function finalize() {
+			/*jshint forin:false*/
 			var self = this;
 			var property;
 

@@ -2,8 +2,8 @@
  * TroopJS data/component/widget
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-/*global define:false */
 define([ "troopjs-browser/component/widget" ], function WidgetModule(Widget) {
+	"use strict";
 
 	var ARRAY_PUSH = Array.prototype.push;
 

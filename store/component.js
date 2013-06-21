@@ -2,8 +2,9 @@
  * TroopJS data/store/component module
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-/*global define:false */
 define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], function StoreModule(Gadget, when, apply) {
+	"use strict";
+
 	var UNDEFINED;
 	var OBJECT_TOSTRING = Object.prototype.toString;
 	var TOSTRING_ARRAY = "[object Array]";
@@ -26,6 +27,7 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 	 * @private
 	 */
 	function applyMethod(method) {
+		/*jshint validthis:true*/
 		var me = this;
 
 		return method in me && me[method].apply(me, ARRAY_SLICE.call(arguments, 1));
@@ -39,6 +41,7 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 	 * @private
 	 */
 	function put(key, value) {
+		/*jshint validthis:true*/
 		var self = this;
 		var node = self[STORAGE];
 		var parts = key
@@ -79,8 +82,10 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 		return last !== UNDEFINED
 			// First store the promise, then override with the true value once resolved
 			? when(value, function (result) {
-			return node[last] = result;
-		})
+				node[last] = result;
+
+				return result;
+			})
 			// No key provided, just return a promise of the value
 			: when(value);
 	}
@@ -92,6 +97,7 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 	 * @private
 	 */
 	function get(key) {
+		/*jshint validthis:true*/
 		var node = this[STORAGE];
 		var parts = key.split(".");
 		var part;
@@ -123,6 +129,7 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 	 * @private
 	 */
 	function has(key) {
+		/*jshint validthis:true*/
 		var node = this[STORAGE];
 		var parts = key.split(".");
 		var part;
@@ -171,12 +178,15 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 		 */
 		"lock" : function (key, onFulfilled, onRejected, onProgress) {
 			var locks = this[LOCKS];
+			var result;
 
 			if (OBJECT_TOSTRING.call(key) !== TOSTRING_STRING) {
 				throw new Error("key has to be of type string");
 			}
 
-			return locks[key] = when(locks[key], onFulfilled, onRejected, onProgress);
+			result = locks[key] = when(locks[key], onFulfilled, onRejected, onProgress);
+
+			return result;
 		},
 
 		/**
@@ -188,6 +198,7 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 		 * @returns {Promise} Promise of value
 		 */
 		"get" : function (key, onFulfilled, onRejected, onProgress) {
+			/*jshint curly:false*/
 			var self = this;
 			var keys = ARRAY_SLICE.call(arguments);
 			var i;

@@ -2,9 +2,8 @@
  * TroopJS data/query/service
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-/*global define:false */
 define([ "module", "troopjs-core/component/service", "./component", "troopjs-utils/merge", "when", "when/apply" ], function QueryServiceModule(module, Service, Query, merge, when, apply) {
-	/*jshint laxbreak:true */
+	"use strict";
 
 	var UNDEFINED;
 	var ARRAY_PROTO = Array.prototype;

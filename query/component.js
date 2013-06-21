@@ -2,9 +2,8 @@
  * TroopJS data/query/component
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-/*global define:false */
 define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
-	/*jshint laxbreak:true */
+	"use strict";
 
 	var UNDEFINED;
 	var TRUE = true;
@@ -65,6 +64,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 
 				switch (c) {
 					case "\"" : // Double quote
+					/* falls through */
 					case "'" :  // Single quote
 						// Set / unset quote char
 						q = q === c
@@ -84,6 +84,7 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 						break;
 
 					case OP_PROPERTY :
+					/* falls through */
 					case OP_PATH :
 						// Break fast if we're quoted
 						if (q !== UNDEFINED) {
@@ -105,9 +106,13 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 						break;
 
 					case OP_QUERY :
+					/* falls through */
 					case " " :  // Space
+					/* falls through */
 					case "\t" : // Horizontal tab
+					/* falls through */
 					case "\r" : // Carriage return
+					/* falls through */
 					case "\n" : // Newline
 						// Break fast if we're quoted
 						if (q !== UNDEFINED) {
