@@ -15,10 +15,10 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 			},
 
 			"tearDown" : function (done) {
-				var self = this;
+				var me = this;
 
-				self.cache.stop().then(function () {
-					delete self.cache;
+				me.cache.stop().then(function () {
+					delete me.cache;
 
 					done();
 				});

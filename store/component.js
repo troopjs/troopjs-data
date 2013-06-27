@@ -42,8 +42,8 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 	 */
 	function put(key, value) {
 		/*jshint validthis:true*/
-		var self = this;
-		var node = self[STORAGE];
+		var me = this;
+		var node = me[STORAGE];
 		var parts = key
 			? key.split(".")
 			: [];
@@ -69,12 +69,12 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 
 		// Evaluate value if needed
 		if (OBJECT_TOSTRING.call(value) === TOSTRING_FUNCTION) {
-			value = value.call(self, {
+			value = value.call(me, {
 				"get" : function () {
-					return get.apply(self, arguments);
+					return get.apply(me, arguments);
 				},
 				"has" : function () {
-					return has.apply(self, arguments);
+					return has.apply(me, arguments);
 				}
 			}, key);
 		}
@@ -160,11 +160,11 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 			throw new Error("No adapter(s) provided");
 		}
 
-		var self = this;
+		var me = this;
 
-		self[ADAPTERS] = ARRAY_SLICE.call(arguments);
-		self[STORAGE] = {};
-		self[LOCKS] = {};
+		me[ADAPTERS] = ARRAY_SLICE.call(arguments);
+		me[STORAGE] = {};
+		me[LOCKS] = {};
 	}, {
 		"displayName" : "data/store/component",
 
@@ -199,7 +199,7 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 		 */
 		"get" : function (key, onFulfilled, onRejected, onProgress) {
 			/*jshint curly:false*/
-			var self = this;
+			var me = this;
 			var keys = ARRAY_SLICE.call(arguments);
 			var i;
 			var iMax;
@@ -219,12 +219,12 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 				.map(keys, function (key) {
 					return when
 						// Map adapters and BEFORE_GET on each adapter
-						.map(self[ADAPTERS], function (adapter) {
-							return when(applyMethod.call(adapter, BEFORE_GET, self, key));
+						.map(me[ADAPTERS], function (adapter) {
+							return when(applyMethod.call(adapter, BEFORE_GET, me, key));
 						})
 						// Get value from STORAGE
 						.then(function () {
-							return get.call(self, key);
+							return get.call(me, key);
 						});
 				})
 				// Add callbacks
@@ -241,13 +241,13 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 		 * @returns {Promise} Promise of value
 		 */
 		"put" : function (key, value, onFulfilled, onRejected, onProgress) {
-			var self = this;
+			var me = this;
 
-			return when(put.call(self, key, value), function (result) {
+			return when(put.call(me, key, value), function (result) {
 				return when
 					// Map adapters and AFTER_PUT on each adapter
-					.map(self[ADAPTERS], function (adapter) {
-						return when(applyMethod.call(adapter, AFTER_PUT, self, key, result));
+					.map(me[ADAPTERS], function (adapter) {
+						return when(applyMethod.call(adapter, AFTER_PUT, me, key, result));
 					})
 					.yield(result);
 			})
@@ -265,10 +265,10 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 		 * @returns {Promise} Promise of value
 		 */
 		"putIfNotHas" : function (key, value, onFulfilled, onRejected, onProgress) {
-			var self = this;
+			var me = this;
 
-			return !self.has(key)
-				? self.put(key, value, onFulfilled, onRejected, onProgress)
+			return !me.has(key)
+				? me.put(key, value, onFulfilled, onRejected, onProgress)
 				: when(UNDEFINED, onFulfilled, onRejected, onProgress);
 		},
 
@@ -289,11 +289,11 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 		 * @returns {Promise} Promise of clear
 		 */
 		"clear" : function (onFulfilled, onRejected, onProgress) {
-			var self = this;
+			var me = this;
 
 			return when
-				.map(self[ADAPTERS], function (adapter) {
-					return when(applyMethod.call(adapter, CLEAR, self));
+				.map(me[ADAPTERS], function (adapter) {
+					return when(applyMethod.call(adapter, CLEAR, me));
 				})
 				// Add callbacks
 				.then(onFulfilled && apply(onFulfilled), onRejected, onProgress);

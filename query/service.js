@@ -23,28 +23,28 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 	var MODULE_CONFIG = module.config();
 
 	return Service.extend(function QueryService(cache) {
-		var self = this;
+		var me = this;
 
 		if (cache === UNDEFINED) {
 			throw new Error("No cache provided");
 		}
 
-		self[BATCHES] = [];
-		self[CACHE] = cache;
+		me[BATCHES] = [];
+		me[CACHE] = cache;
 
-		self.configure(MODULE_CONFIG);
+		me.configure(MODULE_CONFIG);
 	}, {
 		"displayName" : "data/query/service",
 
 		"sig/start" : function start() {
-			var self = this;
-			var cache = self[CACHE];
+			var me = this;
+			var cache = me[CACHE];
 
 			// Set interval (if we don't have one)
-			self[INTERVAL] = INTERVAL in self
-				? self[INTERVAL]
+			me[INTERVAL] = INTERVAL in me
+				? me[INTERVAL]
 				: setInterval(function scan() {
-				var batches = self[BATCHES];
+				var batches = me[BATCHES];
 
 				// Return fast if there is nothing to do
 				if (batches[LENGTH] === 0) {
@@ -52,7 +52,7 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 				}
 
 				// Reset batches
-				self[BATCHES] = [];
+				me[BATCHES] = [];
 
 				function request() {
 					var q = [];
@@ -65,11 +65,11 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 					}
 
 					// Publish ajax
-					return self.publish("ajax", merge.call({
+					return me.publish("ajax", merge.call({
 						"data": {
 							"q": q.join("|")
 						}
-					}, self[CONFIGURATION]));
+					}, me[CONFIGURATION]));
 				}
 
 				function done(data) {
@@ -120,22 +120,22 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 		},
 
 		"sig/stop" : function stop() {
-			var self = this;
+			var me = this;
 
 			// Only do this if we have an interval
-			if (INTERVAL in self) {
+			if (INTERVAL in me) {
 				// Clear interval
-				clearInterval(self[INTERVAL]);
+				clearInterval(me[INTERVAL]);
 
 				// Reset interval
-				delete self[INTERVAL];
+				delete me[INTERVAL];
 			}
 		},
 
 		"hub/query" : function hubQuery(/* query, query, query, .., */) {
-			var self = this;
-			var batches = self[BATCHES];
-			var cache = self[CACHE];
+			var me = this;
+			var batches = me[BATCHES];
+			var cache = me[CACHE];
 			var q = [];
 			var id = [];
 			var ast;

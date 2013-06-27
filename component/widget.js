@@ -15,12 +15,12 @@ define([ "troopjs-browser/component/widget" ], function WidgetModule(Widget) {
 		 * @returns {Promise} of query result(s)
 		 */
 		"query" : function query() {
-			var self = this;
+			var me = this;
 			var args = [ "query" ];
 
 			ARRAY_PUSH.apply(args, arguments);
 
-			return self.publish.apply(self, args);
+			return me.publish.apply(me, args);
 		}
 	});
 });

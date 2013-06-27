@@ -33,22 +33,22 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 	var TO_TEXT = "!'$1'";
 
 	return Component.extend(function QueryComponent(query) {
-		var self = this;
+		var me = this;
 
 		if (query !== UNDEFINED) {
-			self[_QUERY] = query;
+			me[_QUERY] = query;
 		}
 	}, {
 		"displayName" : "data/query/component",
 
 		"parse" : function parse(query) {
-			var self = this;
+			var me = this;
 
 			// Reset _AST
-			delete self[_AST];
+			delete me[_AST];
 
 			// Set _QUERY
-			query = self[_QUERY] = (query || self[_QUERY] || "");
+			query = me[_QUERY] = (query || me[_QUERY] || "");
 
 			var i;          // Index
 			var l;          // Length
@@ -141,21 +141,21 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 			}
 
 			// Set _AST
-			self[_AST] = ast;
+			me[_AST] = ast;
 
-			return self;
+			return me;
 		},
 
 		"reduce" : function reduce(cache) {
-			var self = this;
+			var me = this;
 			var now = 0 | new Date().getTime() / 1000;
 
 			// If we're not parsed - parse
-			if (!(_AST in self)) {
-				self.parse();
+			if (!(_AST in me)) {
+				me.parse();
 			}
 
-			var ast = self[_AST]; // _AST
+			var ast = me[_AST]; // _AST
 			var result = [];    // Result
 			var i;              // Index
 			var j;
@@ -298,31 +298,31 @@ define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
 			}
 
 			// Update _AST
-			self[_AST] = result;
+			me[_AST] = result;
 
-			return self;
+			return me;
 		},
 
 		"ast" : function ast() {
-			var self = this;
+			var me = this;
 
 			// If we're not parsed - parse
-			if (!(_AST in self)) {
-				self.parse();
+			if (!(_AST in me)) {
+				me.parse();
 			}
 
-			return self[_AST];
+			return me[_AST];
 		},
 
 		"rewrite" : function rewrite() {
-			var self = this;
+			var me = this;
 
 			// If we're not parsed - parse
-			if (!(_AST in self)) {
-				self.parse();
+			if (!(_AST in me)) {
+				me.parse();
 			}
 
-			var ast = self[_AST]; // AST
+			var ast = me[_AST]; // AST
 			var result = "";    // Result
 			var l;              // Current length
 			var i;              // Current index

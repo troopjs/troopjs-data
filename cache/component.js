@@ -36,7 +36,7 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 	 */
 	function _put(node, _constructor, now) {
 		/*jshint validthis:true, forin:false, curly:false, -W086*/
-		var self = this;
+		var me = this;
 		var result;
 		var id;
 		var i;
@@ -47,7 +47,7 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 		var current;
 		var next;
 		var generation;
-		var generations = self[GENERATIONS];
+		var generations = me[GENERATIONS];
 		var property;
 		var value;
 
@@ -63,13 +63,13 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 			id = node[_ID];
 
 			// In cache, get it!
-			if (id in self) {
-				result = self[id];
+			if (id in me) {
+				result = me[id];
 				break cache;
 			}
 
 			// Not in cache, add it!
-			result = self[id] = node;   // Reuse ref to node (avoids object creation)
+			result = me[id] = node;   // Reuse ref to node (avoids object creation)
 
 			// Update _INDEXED
 			result[_INDEXED] = now;
@@ -92,7 +92,7 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 
 				// Do magic comparison to see if we recursively put this in the cache, or plain put
 				result[i] = (_constructor === OBJECT || _constructor === ARRAY && value[LENGTH] !== 0)
-					? _put.call(self, value, _constructor, now)
+					? _put.call(me, value, _constructor, now)
 					: value;
 			}
 		}
@@ -118,7 +118,7 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 
 				// Do magic comparison to see if we recursively put this in the cache, or plain put
 				result[property] = (_constructor === OBJECT || _constructor === ARRAY && value[LENGTH] !== 0)
-					? _put.call(self, value, _constructor, now)
+					? _put.call(me, value, _constructor, now)
 					: value;
 			}
 		}
@@ -208,12 +208,12 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 		"displayName" : "data/cache/component",
 
 		"sig/start" : function start() {
-			var self = this;
-			var generations = self[GENERATIONS];
+			var me = this;
+			var generations = me[GENERATIONS];
 
 			// Create new sweep interval
-			self[INTERVAL] = INTERVAL in self
-				? self[INTERVAL]
+			me[INTERVAL] = INTERVAL in me
+				? me[INTERVAL]
 				: setInterval(function sweep() {
 				/*jshint forin:false*/
 				// Calculate expiration of this generation
@@ -243,8 +243,8 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 							continue;
 						}
 
-						// Delete from self (cache)
-						delete self[property];
+						// Delete from me (cache)
+						delete me[property];
 					}
 
 					// Delete generation
@@ -255,36 +255,36 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 
 				// Reset head
 				generations[HEAD] = current;
-			}, self[AGE]);
+			}, me[AGE]);
 		},
 
 		"sig/stop" : function stop() {
-			var self = this;
+			var me = this;
 
 			// Only do this if we have an interval
-			if (INTERVAL in self) {
+			if (INTERVAL in me) {
 				// Clear interval
-				clearInterval(self[INTERVAL]);
+				clearInterval(me[INTERVAL]);
 
 				// Reset interval
-				delete self[INTERVAL];
+				delete me[INTERVAL];
 			}
 		},
 
 		"sig/finalize" : function finalize() {
 			/*jshint forin:false*/
-			var self = this;
+			var me = this;
 			var property;
 
-			// Iterate all properties on self
-			for (property in self) {
+			// Iterate all properties on me
+			for (property in me) {
 				// Don't delete non-objects or objects that don't ducktype cachable
-				if (self[property][CONSTRUCTOR] !== OBJECT || !(_ID in self[property])) {
+				if (me[property][CONSTRUCTOR] !== OBJECT || !(_ID in me[property])) {
 					continue;
 				}
 
-				// Delete from self (cache)
-				delete self[property];
+				// Delete from me (cache)
+				delete me[property];
 			}
 		},
 
@@ -294,7 +294,7 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 		 * @returns Cached node (if it existed in the cache before), otherwise the node sent in
 		 */
 		"put" : function put(node) {
-			var self = this;
+			var me = this;
 
 			// Get _constructor of node (safely, falling back to UNDEFINED)
 			var _constructor = node === NULL || node === UNDEFINED
@@ -303,7 +303,7 @@ define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
 
 			// Do magic comparison to see if we should cache this object
 			return _constructor === OBJECT || _constructor === ARRAY && node[LENGTH] !== 0
-				? _put.call(self, node, _constructor, 0 | new Date().getTime() / SECOND)
+				? _put.call(me, node, _constructor, 0 | new Date().getTime() / SECOND)
 				: node;
 		}
 	});
