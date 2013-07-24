@@ -2,7 +2,7 @@
  * TroopJS data/query/component
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-define( [ "troopjs-core/component/base" ], function QueryModule(Component) {
+define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 	"use strict";
 
 	var UNDEFINED;

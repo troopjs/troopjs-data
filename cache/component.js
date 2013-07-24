@@ -2,7 +2,7 @@
  * TroopJS data/cache/component
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-define( [ "troopjs-core/component/base" ], function CacheModule(Component) {
+define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 	"use strict";
 
 	var UNDEFINED;
