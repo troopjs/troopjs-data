@@ -1,4 +1,4 @@
-/**
+/*
  * TroopJS data/cache/component
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
@@ -27,7 +27,7 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 	var _INDEXED = "indexed";
 	var _COLLAPSED = "collapsed";
 
-	/**
+	/*
 	 * Internal method to put a node in the cache
 	 * @param node Node
 	 * @param _constructor Constructor of value
@@ -199,6 +199,11 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 		return result;
 	}
 
+	/**
+	 * Component for handling effective object caching with cycle references concerned.
+	 * @class data.cache.component
+	 * @extends core.component.base
+	 */
 	return Component.extend(function CacheComponent(age) {
 		var me = this;
 

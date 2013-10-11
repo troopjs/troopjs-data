@@ -1,4 +1,4 @@
-/**
+/*
  * TroopJS data/query/service
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
@@ -22,6 +22,13 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 	var Q = "q";
 	var MODULE_CONFIG = module.config();
 
+	/**
+	 * Service that batch processes the query requests send to server and cache the results.
+	 *
+	 * ** Note ** Ajax service is used to talk to the server.
+	 * @class data.query.service
+	 * @extends core.component.service
+	 */
 	return Service.extend(function QueryService(cache) {
 		var me = this;
 
@@ -132,6 +139,11 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 			}
 		},
 
+		/**
+		 * Handle query request on hub event.
+		 * @event
+		 * @returns {Promise}
+		 */
 		"hub/query" : function hubQuery(/* query, query, query, .., */) {
 			var me = this;
 			var batches = me[BATCHES];
