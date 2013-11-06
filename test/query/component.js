@@ -1,4 +1,7 @@
+/*globals buster:false*/
 buster.testCase("troopjs-data/query/component", function (run) {
+	"use strict";
+
 	var UNDEFINED;
 	var assert = buster.assert;
 
@@ -214,13 +217,13 @@ buster.testCase("troopjs-data/query/component", function (run) {
 				},
 
 				"tearDown" : function (done) {
-					var self = this;
+					var me = this;
 
-					self.cache.stop().then(function () {
-						delete self.cache;
+					me.cache.stop().then(function () {
+						delete me.cache;
 
 						done();
-					})
+					});
 				},
 
 				"with static data" : {
@@ -508,10 +511,10 @@ buster.testCase("troopjs-data/query/component", function (run) {
 				},
 
 				"tearDown" : function (done) {
-					var self = this;
+					var me = this;
 
-					self.cache.stop().then(function () {
-						delete self.cache;
+					me.cache.stop().then(function () {
+						delete me.cache;
 
 						done();
 					});

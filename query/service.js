@@ -2,48 +2,49 @@
  * TroopJS data/query/service
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-/*global define:false */
-define([ "module", "troopjs-core/component/service", "./component", "troopjs-core/pubsub/topic", "when", "troopjs-utils/merge" ], function QueryServiceModule(module, Service, Query, Topic, when, merge) {
-	/*jshint laxbreak:true */
+define([ "module", "troopjs-core/component/service", "./component", "troopjs-utils/merge", "when", "when/apply" ], function QueryServiceModule(module, Service, Query, merge, when, apply) {
+	"use strict";
 
 	var UNDEFINED;
 	var ARRAY_PROTO = Array.prototype;
 	var ARRAY_SLICE = ARRAY_PROTO.slice;
 	var ARRAY_CONCAT = ARRAY_PROTO.concat;
-	var PUSH = ARRAY_PROTO.push;
+	var ARRAY_PUSH = ARRAY_PROTO.push;
 	var LENGTH = "length";
 	var BATCHES = "batches";
 	var INTERVAL = "interval";
 	var CACHE = "cache";
-	var TOPIC = "topic";
 	var QUERIES = "queries";
 	var RESOLVED = "resolved";
+	var CONFIGURATION = "configuration";
 	var RAW = "raw";
 	var ID = "id";
 	var Q = "q";
-	var CONFIG = module.config();
+	var MODULE_CONFIG = module.config();
 
-	var QueryService = Service.extend(function QueryService(cache) {
-		var self = this;
+	return Service.extend(function QueryService(cache) {
+		var me = this;
 
 		if (cache === UNDEFINED) {
 			throw new Error("No cache provided");
 		}
 
-		self[BATCHES] = [];
-		self[CACHE] = cache;
+		me[BATCHES] = [];
+		me[CACHE] = cache;
+
+		me.configure(MODULE_CONFIG);
 	}, {
 		"displayName" : "data/query/service",
 
 		"sig/start" : function start() {
-			var self = this;
-			var cache = self[CACHE];
+			var me = this;
+			var cache = me[CACHE];
 
 			// Set interval (if we don't have one)
-			self[INTERVAL] = INTERVAL in self
-				? self[INTERVAL]
+			me[INTERVAL] = INTERVAL in me
+				? me[INTERVAL]
 				: setInterval(function scan() {
-				var batches = self[BATCHES];
+				var batches = me[BATCHES];
 
 				// Return fast if there is nothing to do
 				if (batches[LENGTH] === 0) {
@@ -51,31 +52,24 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 				}
 
 				// Reset batches
-				self[BATCHES] = [];
+				me[BATCHES] = [];
 
 				function request() {
 					var q = [];
-					var topics = [];
-					var batch;
 					var i;
 
 					// Iterate batches
 					for (i = batches[LENGTH]; i--;) {
-						batch = batches[i];
-
-						// Add batch[TOPIC] to topics
-						PUSH.call(topics, batch[TOPIC]);
-
 						// Add batch[Q] to q
-						PUSH.apply(q, batch[Q]);
+						ARRAY_PUSH.apply(q, batches[i][Q]);
 					}
 
 					// Publish ajax
-					return self.publish(Topic("ajax", self, topics), merge.call({
+					return me.publish("ajax", merge.call({
 						"data": {
 							"q": q.join("|")
 						}
-					}, CONFIG));
+					}, me[CONFIGURATION]));
 				}
 
 				function done(data) {
@@ -121,27 +115,27 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 				}
 
 				// Request and handle response
-				return request().then(done, fail);
+				request().then(done, fail);
 			}, 200);
 		},
 
 		"sig/stop" : function stop() {
-			var self = this;
+			var me = this;
 
 			// Only do this if we have an interval
-			if (INTERVAL in self) {
+			if (INTERVAL in me) {
 				// Clear interval
-				clearInterval(self[INTERVAL]);
+				clearInterval(me[INTERVAL]);
 
 				// Reset interval
-				delete self[INTERVAL];
+				delete me[INTERVAL];
 			}
 		},
 
-		"hub/query" : function hubQuery(topic /* query, query, query, .., */) {
-			var self = this;
-			var batches = self[BATCHES];
-			var cache = self[CACHE];
+		"hub/query" : function hubQuery(/* query, query, query, .., */) {
+			var me = this;
+			var batches = me[BATCHES];
+			var cache = me[CACHE];
 			var q = [];
 			var id = [];
 			var ast;
@@ -152,11 +146,12 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 			var query;
 
 			// Create deferred batch
-			var batch = when.defer();
+			var deferred = when.defer();
+			var resolver = deferred.resolver;
 
 			try {
 				// Slice and flatten queries
-				queries = ARRAY_CONCAT.apply(ARRAY_PROTO, ARRAY_SLICE.call(arguments, 1));
+				queries = ARRAY_CONCAT.apply(ARRAY_PROTO, ARRAY_SLICE.call(arguments));
 
 				// Iterate queries
 				for (i = 0, iMax = queries[LENGTH]; i < iMax; i++) {
@@ -180,7 +175,7 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 						// If this op is not resolved
 						if (!ast[j][RESOLVED]) {
 							// Add rewritten (and reduced) query to q
-							PUSH.call(q, query.rewrite());
+							ARRAY_PUSH.call(q, query.rewrite());
 							break;
 						}
 					}
@@ -196,32 +191,25 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-cor
 						}
 					}
 
-					// Resolve batch
-					batch.resolve(queries);
+					// Resolve batch resolver
+					resolver.resolve(queries);
 				}
 				else {
 					// Store properties on batch
-					batch[TOPIC] = topic;
-					batch[QUERIES] = queries;
-					batch[ID] = id;
-					batch[Q] = q;
+					resolver[QUERIES] = queries;
+					resolver[ID] = id;
+					resolver[Q] = q;
 
 					// Add batch to batches
-					batches.push(batch);
+					batches.push(resolver);
 				}
 			}
 			catch (e) {
-				batch.reject(e);
+				resolver.reject(e);
 			}
 
 			// Return promise
-			return batch.promise;
+			return deferred.promise;
 		}
 	});
-
-	QueryService.config = function config(_config) {
-		return merge.call(CONFIG, _config);
-	};
-
-	return QueryService;
 });

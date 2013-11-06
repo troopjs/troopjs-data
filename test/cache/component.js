@@ -1,4 +1,7 @@
+/*globals buster:false*/
 buster.testCase("troopjs-data/cache/component", function (run) {
+	"use strict";
+
 	var assert = buster.assert;
 	var refute = buster.assertions.refute;
 
@@ -12,10 +15,10 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 			},
 
 			"tearDown" : function (done) {
-				var self = this;
+				var me = this;
 
-				self.cache.stop().then(function () {
-					delete self.cache;
+				me.cache.stop().then(function () {
+					delete me.cache;
 
 					done();
 				});

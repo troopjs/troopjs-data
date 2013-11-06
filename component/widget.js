@@ -2,8 +2,8 @@
  * TroopJS data/component/widget
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-/*global define:false */
-define([ "troopjs-browser/component/widget", "troopjs-core/pubsub/topic" ], function WidgetModule(Widget, Topic) {
+define([ "troopjs-browser/component/widget" ], function WidgetModule(Widget) {
+	"use strict";
 
 	var ARRAY_PUSH = Array.prototype.push;
 
@@ -15,12 +15,12 @@ define([ "troopjs-browser/component/widget", "troopjs-core/pubsub/topic" ], func
 		 * @returns {Promise} of query result(s)
 		 */
 		"query" : function query() {
-			var self = this;
-			var args = [ Topic("query", this) ];
+			var me = this;
+			var args = [ "query" ];
 
 			ARRAY_PUSH.apply(args, arguments);
 
-			return self.publish.apply(self, args);
+			return me.publish.apply(me, args);
 		}
 	});
 });
