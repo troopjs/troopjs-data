@@ -184,7 +184,7 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 							// Set current node
 							n = cache[x];
 							// Set RESOLVED if we're not collapsed or expired
-							o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n) || n[_EXPIRES] > now;
+							o[RESOLVED] = n[_COLLAPSED] !== TRUE && (!(_EXPIRES in n) || n[_EXPIRES] > now);
 						}
 						else {
 							// Reset current root and node
