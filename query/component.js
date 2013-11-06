@@ -184,7 +184,7 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 							// Set current node
 							n = cache[x];
 							// Set RESOLVED if we're not collapsed or expired
-							o[RESOLVED] = n[_COLLAPSED] !== TRUE && (!(_EXPIRES in n) || n[_EXPIRES] > now);
+							o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n && n[_EXPIRES] < now);
 						}
 						else {
 							// Reset current root and node
@@ -224,8 +224,7 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 									if (c[CONSTRUCTOR] !== OBJECT
 										|| !(_ID in c)
 										|| c[_COLLAPSED] !== TRUE
-										&& !(_EXPIRES in c)
-										|| c[_EXPIRES] > now) {
+										&& !(_EXPIRES in c && c[_EXPIRES] < now)) {
 										continue;
 									}
 
@@ -245,7 +244,7 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 								// Update RAW to _ID and TEXT to escaped version of RAW
 								o[TEXT] = (o[RAW] = n[_ID]).replace(RE_RAW, TO_TEXT);
 								// Set RESOLVED if we're not collapsed or expired
-								o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n) || n[_EXPIRES] > now;
+								o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n && n[_EXPIRES] < now);
 							}
 						}
 						else {
