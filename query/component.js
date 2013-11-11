@@ -165,6 +165,7 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 			var x;              // Current raw
 			var r;              // Current root
 			var n;              // Current node
+			var d = FALSE;      // Dead flag
 			var k = FALSE;      // Keep flag
 
 			// First step is to resolve what we can from the _AST
@@ -183,14 +184,14 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 						if (x in cache) {
 							// Set current node
 							n = cache[x];
-							// Set RESOLVED if we're not collapsed or expired
-							o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n && n[_EXPIRES] < now);
+							// Set dead and RESOLVED if we're not collapsed or expired
+							d = o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n && n[_EXPIRES] < now);
 						}
 						else {
 							// Reset current root and node
 							n = UNDEFINED;
-							// Reset RESOLVED
-							o[RESOLVED] = FALSE;
+							// Reset dead and RESOLVED
+							d = o[RESOLVED] = FALSE;
 						}
 						break;
 
@@ -198,8 +199,12 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 						// Get e from o
 						x = o[RAW];
 
+						// Was previous op dead?
+						if (!d) {
+							o[RESOLVED] = FALSE;
+						}
 						// Do we have a node and this item in the node
-						if (n && x in n) {
+						else if (n && x in n) {
 							// Set current node
 							n = n[x];
 
