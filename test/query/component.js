@@ -453,6 +453,10 @@ buster.testCase("troopjs-data/query/component", function (run) {
 								"id" : "test!xxx",
 								"collapsed" : true
 							}
+						}, {
+							"id": "test!xxx",
+							"collapsed": false,
+							"maxAge" : 5
 						}]);
 					},
 
@@ -466,6 +470,30 @@ buster.testCase("troopjs-data/query/component", function (run) {
 								"op" : "!",
 								"text" : "test!321",
 								"raw" : "test!321",
+								"resolved" : false
+							}]);
+
+							done();
+						}, 1000);
+
+						this.timeout = 1100;
+					},
+
+					"test!321.p2" : function (done) {
+						var cache = this.cache;
+
+						setTimeout(function () {
+							var ast = Query("test!321.p2").reduce(cache).ast();
+
+							assert.equals(ast, [{
+								"op" : "!",
+								"text" : "test!321",
+								"raw" : "test!321",
+								"resolved" : false
+							}, {
+								"op" : ".",
+								"text" : "p2",
+								"raw" : "p2",
 								"resolved" : false
 							}]);
 
