@@ -74,7 +74,7 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 				"setUp" : function (done) {
 					var foo = this.cache.put({
 						"id" : "foo",
-						"maxAge" : 10,
+						"maxAge" : 10
 					});
 
 					// Save the last index.
@@ -84,6 +84,7 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 					setTimeout(function() {
 						done();
 					}, 1000);
+
 					this.timeout = 1500;
 				},
 
@@ -93,7 +94,6 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 				},
 
 				"update put" : function () {
-					var justnow = now();
 					var foo = this.cache.put({ id: "foo" });
 					assert(foo["indexed"] > this.indexed);
 				}
