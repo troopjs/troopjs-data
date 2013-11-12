@@ -99,6 +99,14 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 
 		// Check that this is an OBJECT
 		else if (_constructor === OBJECT) {
+			// Prune properties from result
+			for (property in result) {
+				// If property is _not_ present in node
+				if (!(property in node)) {
+					delete result[property];
+				}
+			}
+
 			// Index all properties
 			for (property in node) {
 				// Except the _ID property
