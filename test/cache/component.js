@@ -54,6 +54,36 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 				}
 			},
 
+			"test obj.indexed is updated for each put" : {
+
+				"setUp" : function (done) {
+					var foo = this.cache.put({
+						"id" : "foo",
+						"maxAge" : 10,
+					});
+
+					// Save the last index.
+					this.indexed = foo["indexed"];
+
+					// At least 1s to get a different index
+					setTimeout(function() {
+						done();
+					}, 1000);
+					this.timeout = 1500;
+				},
+
+				"fresh put" : function () {
+					var bar = this.cache.put({ id: "bar" });
+					assert(bar["indexed"] > this.indexed);
+				},
+
+				"update put" : function () {
+					var justnow = now();
+					var foo = this.cache.put({ id: "foo" });
+					assert(foo["indexed"] > this.indexed);
+				}
+			},
+
 			"with maxAged data 'one' is cached" : {
 				"setUp" : function () {
 					this.cache.put([{
