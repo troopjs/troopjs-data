@@ -59,6 +59,9 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 				break cache;
 			}
 
+			// Update _INDEXED
+			node[_INDEXED] = now;
+
 			// Get _ID
 			id = node[_ID];
 
@@ -70,9 +73,6 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 
 			// Not in cache, add it!
 			result = me[id] = node;   // Reuse ref to node (avoids object creation)
-
-			// Update _INDEXED
-			result[_INDEXED] = now;
 		}
 
 		// We have to deep traverse the graph before we do any expiration (as more data for this object can be available)
