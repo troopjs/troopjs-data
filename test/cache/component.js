@@ -51,6 +51,21 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 					var cache = this.cache;
 
 					assert.same(cache["one"]["two"], cache["two"]);
+				},
+
+				"'one' is pruned after update" : function () {
+					var cache = this.cache;
+					var one = cache["one"];
+
+					cache.put({
+						"id" : "one"
+					});
+
+					assert.match({
+						"id" : one["id"],
+						"expires": one["expires"],
+						"indexed": one["indexed"]
+					}, one);
 				}
 			},
 
