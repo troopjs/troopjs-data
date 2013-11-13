@@ -115,7 +115,7 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 					}
 				}
 			}
-
+			
 			// Index all properties
 			for (property in node) {
 				// Except the _ID property
