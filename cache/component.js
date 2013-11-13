@@ -99,20 +99,11 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 
 		// Check that this is an OBJECT
 		else if (_constructor === OBJECT) {
-			// Check if _not_ _COLLAPSED
-			if (node[_COLLAPSED] === FALSE) {
-				// Prune properties from result
-				for (property in result) {
-					// Except the _ID property
-					// or the _COLLAPSED property
-					// or the _EXPIRES property
-					// if property is _not_ present in node
-					if (property !== _ID
-						&& property !== _COLLAPSED
-						&& property !== _EXPIRES
-						&& !(property in node)) {
-						delete result[property];
-					}
+			// Prune properties from result
+			for (property in result) {
+				// If property is _not_ present in node
+				if (!(property in node)) {
+					delete result[property];
 				}
 			}
 
