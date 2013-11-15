@@ -175,6 +175,10 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 				// Update expiration time
 				result[_EXPIRES] = expires;
 
+				// Collapsed object should not be collected by GC.
+				if(result[_COLLAPSED] === true)
+					break add;
+
 				// Existing generation
 				if (expires in generations) {
 					// Add result to generation
