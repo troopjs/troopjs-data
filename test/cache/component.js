@@ -53,19 +53,18 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 					assert.same(cache["one"]["two"], cache["two"]);
 				},
 
-				"'one' is pruned after update" : function () {
+				"Properties of 'one' are pruned after update" : function () {
 					var cache = this.cache;
 					var one = cache["one"];
 
+					// Update cache with a non-collapsed object.
 					cache.put({
-						"id" : "one"
+						"id" : "one",
+						"collapsed": false
 					});
 
-					assert.match({
-						"id" : one["id"],
-						"expires": one["expires"],
-						"indexed": one["indexed"]
-					}, one);
+					// Two should be pruned.
+					refute.defined(one["two"]);
 				}
 			},
 
@@ -96,76 +95,6 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 				"update put" : function () {
 					var foo = this.cache.put({ id: "foo" });
 					assert(foo["indexed"] > this.indexed);
-				}
-			},
-
-			"with maxAged data 'one' is cached" : {
-				"setUp" : function () {
-					this.cache.put([{
-						"id" : "one",
-						"maxAge" : 1
-					}, {
-						"id" : "two",
-						"maxAge" : 2,
-						"one" : {
-							"id" : "one",
-							"collapsed" : true
-						}
-					}]);
-				},
-
-				"from the start" : function () {
-					assert.defined(this.cache["one"]);
-				},
-
-				"for at least half but at most one generation" : function (done) {
-					var cache = this.cache;
-
-					setTimeout(function () {
-						assert.defined(cache["one"], "(cached for half of one generation) 'one'");
-
-						setTimeout(function () {
-							refute.defined(cache["one"], "(expired after one generation) 'one'");
-							done();
-						}, 500);
-					}, 500);
-
-					this.timeout = 1100;
-				}
-			},
-
-			"with maxAged data 'two' is cached" : {
-				"setUp" : function () {
-					this.cache.put([{
-						"id" : "one",
-						"maxAge" : 1
-					}, {
-						"id" : "two",
-						"maxAge" : 2,
-						"one" : {
-							"id" : "one",
-							"collapsed" : true
-						}
-					}]);
-				},
-
-				"from the start" : function () {
-					assert.defined(this.cache["two"]);
-				},
-
-				"for at least one but at most two generations" : function (done) {
-					var cache = this.cache;
-
-					setTimeout(function () {
-						assert.defined(cache["two"], "(cached for one generation) 'two'");
-
-						setTimeout(function () {
-							refute.defined(cache["two"], "(expired after two generations) 'two'");
-							done();
-						}, 1050);
-					}, 1000);
-
-					this.timeout = 2100;
 				}
 			}
 		});

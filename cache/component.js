@@ -12,9 +12,7 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 	var ARRAY = Array;
 
 	var SECOND = 1000;
-	var INTERVAL = "interval";
 	var GENERATIONS = "generations";
-	var AGE = "age";
 	var HEAD = "head";
 	var NEXT = "next";
 	var EXPIRES = "expires";
@@ -68,6 +66,11 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 			// In cache, get it!
 			if (id in me) {
 				result = me[id];
+
+				// Bypass collapsed object that already exists in cache.
+				if(node[_COLLAPSED] === true)
+					return result;
+
 				break cache;
 			}
 
@@ -172,6 +175,11 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 			}
 
 			add : {
+
+				// Collapsed object should not be collected by GC.
+				if(result[_COLLAPSED] === true)
+					break add;
+
 				// Update expiration time
 				result[_EXPIRES] = expires;
 
@@ -216,77 +224,10 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 		return result;
 	}
 
-	return Component.extend(function CacheComponent(age) {
-		var me = this;
-
-		me[AGE] = age || (60 * SECOND);
-		me[GENERATIONS] = {};
+	return Component.extend(function CacheComponent() {
+		this[GENERATIONS] = {};
 	}, {
 		"displayName" : "data/cache/component",
-
-		"sig/start" : function start() {
-			var me = this;
-			var generations = me[GENERATIONS];
-
-			// Create new sweep interval
-			me[INTERVAL] = INTERVAL in me
-				? me[INTERVAL]
-				: setInterval(function sweep() {
-				/*jshint forin:false*/
-				// Calculate expiration of this generation
-				var expires = 0 | new Date().getTime() / SECOND;
-
-				var property;
-				var current;
-
-				// Get head
-				current = generations[HEAD];
-
-				// Fail fast if there's no head
-				if (current === UNDEFINED) {
-					return;
-				}
-
-				do {
-					// Exit if this generation is to young
-					if (current[EXPIRES] > expires) {
-						break;
-					}
-
-					// Iterate all properties on current
-					for (property in current) {
-						// And is it not a reserved property
-						if (property === EXPIRES || property === NEXT || property === GENERATIONS) {
-							continue;
-						}
-
-						// Delete from me (cache)
-						delete me[property];
-					}
-
-					// Delete generation
-					delete generations[current[EXPIRES]];
-				}
-				// While there's a next
-				while ((current = current[NEXT]));
-
-				// Reset head
-				generations[HEAD] = current;
-			}, me[AGE]);
-		},
-
-		"sig/stop" : function stop() {
-			var me = this;
-
-			// Only do this if we have an interval
-			if (INTERVAL in me) {
-				// Clear interval
-				clearInterval(me[INTERVAL]);
-
-				// Reset interval
-				delete me[INTERVAL];
-			}
-		},
 
 		"sig/finalize" : function finalize() {
 			/*jshint forin:false*/
