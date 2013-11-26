@@ -68,6 +68,11 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 			// In cache, get it!
 			if (id in me) {
 				result = me[id];
+
+				// Bypass collapsed object that already exists in cache.
+				if(node[_COLLAPSED] === true)
+					return result;
+
 				break cache;
 			}
 
@@ -172,6 +177,11 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 			}
 
 			add : {
+
+				// Collapsed object should not be collected by GC.
+				if(result[_COLLAPSED] === true)
+					break add;
+
 				// Update expiration time
 				result[_EXPIRES] = expires;
 
