@@ -1,4 +1,4 @@
-/**
+/*
  * TroopJS data/component/widget
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
@@ -7,6 +7,11 @@ define([ "troopjs-browser/component/widget" ], function WidgetModule(Widget) {
 
 	var ARRAY_PUSH = Array.prototype.push;
 
+	/**
+	 * Widget that provides the data query api.
+	 * @class data.component.widget
+	 * @extends browser.component.widget
+	 */
 	return Widget.extend({
 		"displayName" : "data/component/widget",
 
