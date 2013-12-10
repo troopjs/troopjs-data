@@ -122,7 +122,7 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 				}
 
 				// Request and handle response
-				request().then(apply(done), fail);
+				request().then(done, fail);
 			}, 200);
 		},
 

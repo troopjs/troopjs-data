@@ -12,9 +12,7 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 	var ARRAY = Array;
 
 	var SECOND = 1000;
-	var INTERVAL = "interval";
 	var GENERATIONS = "generations";
-	var AGE = "age";
 	var HEAD = "head";
 	var NEXT = "next";
 	var EXPIRES = "expires";
@@ -59,20 +57,25 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 				break cache;
 			}
 
+			// Update _INDEXED
+			node[_INDEXED] = now;
+
 			// Get _ID
 			id = node[_ID];
 
 			// In cache, get it!
 			if (id in me) {
 				result = me[id];
+
+				// Bypass collapsed object that already exists in cache.
+				if(node[_COLLAPSED] === true)
+					return result;
+
 				break cache;
 			}
 
 			// Not in cache, add it!
 			result = me[id] = node;   // Reuse ref to node (avoids object creation)
-
-			// Update _INDEXED
-			result[_INDEXED] = now;
 		}
 
 		// We have to deep traverse the graph before we do any expiration (as more data for this object can be available)
@@ -99,6 +102,23 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 
 		// Check that this is an OBJECT
 		else if (_constructor === OBJECT) {
+			// Check if _not_ _COLLAPSED
+			if (node[_COLLAPSED] === FALSE) {
+				// Prune properties from result
+				for (property in result) {
+					// Except the _ID property
+					// or the _COLLAPSED property
+					// or the _EXPIRES property
+					// if property is _not_ present in node
+					if (property !== _ID
+						&& property !== _COLLAPSED
+						&& property !== _EXPIRES
+						&& !(property in node)) {
+						delete result[property];
+					}
+				}
+			}
+
 			// Index all properties
 			for (property in node) {
 				// Except the _ID property
@@ -155,6 +175,11 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 			}
 
 			add : {
+
+				// Collapsed object should not be collected by GC.
+				if(result[_COLLAPSED] === true)
+					break add;
+
 				// Update expiration time
 				result[_EXPIRES] = expires;
 
@@ -205,76 +230,9 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 	 * @extends core.component.base
 	 */
 	return Component.extend(function CacheComponent(age) {
-		var me = this;
-
-		me[AGE] = age || (60 * SECOND);
 		me[GENERATIONS] = {};
 	}, {
 		"displayName" : "data/cache/component",
-
-		"sig/start" : function start() {
-			var me = this;
-			var generations = me[GENERATIONS];
-
-			// Create new sweep interval
-			me[INTERVAL] = INTERVAL in me
-				? me[INTERVAL]
-				: setInterval(function sweep() {
-				/*jshint forin:false*/
-				// Calculate expiration of this generation
-				var expires = 0 | new Date().getTime() / SECOND;
-
-				var property;
-				var current;
-
-				// Get head
-				current = generations[HEAD];
-
-				// Fail fast if there's no head
-				if (current === UNDEFINED) {
-					return;
-				}
-
-				do {
-					// Exit if this generation is to young
-					if (current[EXPIRES] > expires) {
-						break;
-					}
-
-					// Iterate all properties on current
-					for (property in current) {
-						// And is it not a reserved property
-						if (property === EXPIRES || property === NEXT || property === GENERATIONS) {
-							continue;
-						}
-
-						// Delete from me (cache)
-						delete me[property];
-					}
-
-					// Delete generation
-					delete generations[current[EXPIRES]];
-				}
-				// While there's a next
-				while ((current = current[NEXT]));
-
-				// Reset head
-				generations[HEAD] = current;
-			}, me[AGE]);
-		},
-
-		"sig/stop" : function stop() {
-			var me = this;
-
-			// Only do this if we have an interval
-			if (INTERVAL in me) {
-				// Clear interval
-				clearInterval(me[INTERVAL]);
-
-				// Reset interval
-				delete me[INTERVAL];
-			}
-		},
 
 		"sig/finalize" : function finalize() {
 			/*jshint forin:false*/
