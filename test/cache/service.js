@@ -2,8 +2,8 @@
 buster.testCase("troopjs-data/cache/component", function (run) {
 	"use strict";
 
-	var assert = buster.assert;
-	var refute = buster.assertions.refute;
+	var assert = buster.referee.assert;
+	var refute = buster.referee.refute;
 
 	require( [ "troopjs-data/cache/component", "troopjs-data/cache/service" ] , function (Cache, GC) {
 		run({
