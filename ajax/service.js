@@ -1,4 +1,4 @@
-/**
+/*
  * TroopJS data/ajax/service
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
