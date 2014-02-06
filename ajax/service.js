@@ -16,7 +16,7 @@ define([
 			// Request
 			return $.ajax(merge.call({
 				"headers": {
-					"x-request-id": new Date().getTime()
+					"x-troopjs-request-id": new Date().getTime()
 				}
 			}, settings));
 		}
