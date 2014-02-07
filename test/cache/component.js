@@ -6,34 +6,38 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 	var assert = buster.referee.assert;
 	var refute = buster.referee.refute;
 
-	require( [ "troopjs-data/cache/component" ] , function (Cache) {
-		run({
-			"setUp" : function (done) {
-				// Create cache with 1 second generations
-				var cache = this.cache = Cache(1000);
+	var CACHE = "cache";
+	var INDEXED = "indexed";
+	var TIMEOUT = "timeout";
 
-				cache.start().then(done);
+	require( [ "troopjs-data/cache/component", "when/delay" ] , function (Cache, delay) {
+		run({
+			"setUp" : function () {
+				// Create cache with 1 second generations
+				var cache = this[CACHE] = Cache(1000);
+
+				// Return promise of start
+				return cache.start();
 			},
 
-			"tearDown" : function (done) {
+			"tearDown" : function () {
 				var me = this;
 
-				me.cache.stop().then(function () {
-					delete me.cache;
-
-					done();
+				return me[CACHE].stop().done(function () {
+					// Delete cache instance
+					delete me[CACHE];
 				});
 			},
 
 			"with emty cache" : {
 				"'whatever' is undefined" : function () {
-					refute.defined(this.cache["whatever"]);
+					refute.defined(this[CACHE]["whatever"]);
 				}
 			},
 
 			"with static data" : {
 				"setUp" : function () {
-					this.cache.put([{
+					this[CACHE].put([{
 						"id" : "one",
 						"two" : {
 							"id" : "two",
@@ -45,17 +49,17 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 				},
 
 				"'one' is defined" : function () {
-					assert.defined(this.cache["one"]);
+					assert.defined(this[CACHE]["one"]);
 				},
 
 				"'one.two' is same as 'two'" : function () {
-					var cache = this.cache;
+					var cache = this[CACHE];
 
 					assert.same(cache["one"]["two"], cache["two"]);
 				},
 
 				"Properties of 'one' are pruned after update" : function () {
-					var cache = this.cache;
+					var cache = this[CACHE];
 					var one = cache["one"];
 
 					// Update cache with a non-collapsed object.
@@ -70,32 +74,45 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 			},
 
 			"test obj.indexed is updated for each put" : {
+				"setUp" : function () {
+					var me = this;
 
-				"setUp" : function (done) {
-					var foo = this.cache.put({
+					// Set timeout
+					me[TIMEOUT] = 1500;
+
+					// Put foo in cache
+					var foo = me[CACHE].put({
 						"id" : "foo",
 						"maxAge" : 10
 					});
 
 					// Save the last index.
-					this.indexed = foo["indexed"];
+					me[INDEXED] = foo[INDEXED];
 
 					// At least 1s to get a different index
-					setTimeout(function() {
-						done();
-					}, 1000);
-
-					this.timeout = 1500;
+					return delay(1000);
 				},
 
 				"fresh put" : function () {
-					var bar = this.cache.put({ id: "bar" });
-					assert(bar["indexed"] > this.indexed);
+					var me = this;
+
+					// Put bar in cache
+					var bar = me[CACHE].put({
+						id: "bar"
+					});
+
+					assert(bar[INDEXED] > me[INDEXED]);
 				},
 
 				"update put" : function () {
-					var foo = this.cache.put({ id: "foo" });
-					assert(foo["indexed"] > this.indexed);
+					var me = this;
+
+					// Put foo in cache
+					var foo = me[CACHE].put({
+						id: "foo"
+					});
+
+					assert(foo[INDEXED] > me[INDEXED]);
 				}
 			}
 		});
