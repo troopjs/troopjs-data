@@ -2,7 +2,7 @@
  * TroopJS data/cache/component
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-define([ "troopjs-core/component/base" ], function CacheModule(Component) {
+define([ "troopjs-core/component/base", "poly/object", "poly/array" ], function CacheModule(Component) {
 	"use strict";
 
 	var UNDEFINED;
@@ -235,20 +235,20 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 		"displayName" : "data/cache/component",
 
 		"sig/finalize" : function finalize() {
-			/*jshint forin:false*/
 			var me = this;
-			var property;
 
 			// Iterate all properties on me
-			for (property in me) {
-				// Don't delete non-objects or objects that don't ducktype cachable
-				if (me[property][CONSTRUCTOR] !== OBJECT || !(_ID in me[property])) {
-					continue;
-				}
+			Object.keys(me).forEach(function (property) {
+				var value;
 
-				// Delete from me (cache)
-				delete me[property];
-			}
+				// Check if we should delete this property
+				if ((value = me[property]) !== UNDEFINED // value is not UNDEFINED
+					&& [CONSTRUCTOR] === OBJECT            // and value[CONSTRUCTOR] is OBJECT
+					&& value.hasOwnProperty(_ID)) {        // and value ducktypes cachable
+					// Delete from me (cache)
+					delete me[property];
+				}
+			});
 		},
 
 		/**
