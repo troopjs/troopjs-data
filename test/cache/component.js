@@ -8,6 +8,7 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 
 	var CACHE = "cache";
 	var INDEXED = "indexed";
+	var EXPIRES = "expires";
 	var TIMEOUT = "timeout";
 
 	require( [ "troopjs-data/cache/component", "when/delay" ] , function (Cache, delay) {
@@ -29,7 +30,7 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 				});
 			},
 
-			"with emty cache" : {
+			"with empty cache" : {
 				"'whatever' is undefined" : function () {
 					refute.defined(this[CACHE]["whatever"]);
 				}
@@ -45,7 +46,54 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 						}
 					}, {
 						"id" : "two"
+					}, {
+						"id" : "three",
+						"arr" : [{
+							"id": "one",
+							"collapsed": true
+						}, {
+							"id": "two",
+							"collapsed": true
+						}],
+						"obj" : {
+							"one": {
+								"id": "one",
+								"collapsed": true
+							}
+						}
 					}]);
+				},
+
+				"indexing works as expected": function () {
+					var cache = this[CACHE];
+					var one = cache["one"];
+					var two = cache["two"];
+					var three = cache["three"];
+
+					var _two = {
+						"id": "two",
+						"collapsed": true,
+						"indexed": two[INDEXED]
+					};
+
+					var _one = {
+						"id": "one",
+						"expires": one[EXPIRES],
+						"indexed": one[INDEXED],
+						"two": _two
+					};
+
+					var _three = {
+						"id": "three",
+						"indexed": three[INDEXED],
+						"expires": three[EXPIRES],
+						"arr": [_one, _two],
+						"obj": { "one" : _one }
+					};
+
+					assert.equals(one, _one);
+					assert.equals(two, _two);
+					assert.equals(three, _three);
 				},
 
 				"'one' is defined" : function () {
@@ -58,7 +106,7 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 					assert.same(cache["one"]["two"], cache["two"]);
 				},
 
-				"Properties of 'one' are pruned after update" : function () {
+				"properties of 'one' are pruned after update" : function () {
 					var cache = this[CACHE];
 					var one = cache["one"];
 
