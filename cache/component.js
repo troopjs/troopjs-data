@@ -6,6 +6,7 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 	"use strict";
 
 	var UNDEFINED;
+	var TRUE = true;
 	var FALSE = false;
 	var NULL = null;
 	var OBJECT = Object;
@@ -70,8 +71,9 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 				result = me[id];
 
 				// Bypass collapsed object that already exists in cache.
-				if(node[_COLLAPSED] === true)
+				if(node[_COLLAPSED] === TRUE) {
 					return result;
+				}
 
 				break cache;
 			}
@@ -147,8 +149,8 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 
 		// Check if we need to move result between generations
 		move : {
-			// Break fast if id is NULL
-			if (id === NULL) {
+			// Break fast if id is UNDEFINED
+			if (id === UNDEFINED) {
 				break move;
 			}
 
@@ -177,10 +179,10 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 			}
 
 			add : {
-
 				// Collapsed object should not be collected by GC.
-				if(result[_COLLAPSED] === true)
+				if(result[_COLLAPSED] === TRUE) {
 					break add;
+				}
 
 				// Update expiration time
 				result[_EXPIRES] = expires;
