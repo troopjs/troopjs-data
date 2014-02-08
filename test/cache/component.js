@@ -54,7 +54,13 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 						}, {
 							"id": "two",
 							"collapsed": true
-						}]
+						}],
+						"obj" : {
+							"one": {
+								"id": "one",
+								"collapsed": true
+							}
+						}
 					}]);
 				},
 
@@ -81,7 +87,8 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 						"id": "three",
 						"indexed": three[INDEXED],
 						"expires": three[EXPIRES],
-						"arr": [_one, _two]
+						"arr": [_one, _two],
+						"obj": { "one" : _one }
 					};
 
 					assert.equals(one, _one);
