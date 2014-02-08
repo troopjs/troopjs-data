@@ -46,7 +46,47 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 						}
 					}, {
 						"id" : "two"
+					}, {
+						"id" : "three",
+						"arr" : [{
+							"id": "one",
+							"collapsed": true
+						}, {
+							"id": "two",
+							"collapsed": true
+						}]
 					}]);
+				},
+
+				"indexing works as expected": function () {
+					var cache = this[CACHE];
+					var one = cache["one"];
+					var two = cache["two"];
+					var three = cache["three"];
+
+					var _two = {
+						"id": "two",
+						"collapsed": true,
+						"indexed": two[INDEXED]
+					};
+
+					var _one = {
+						"id": "one",
+						"expires": one[EXPIRES],
+						"indexed": one[INDEXED],
+						"two": _two
+					};
+
+					var _three = {
+						"id": "three",
+						"indexed": three[INDEXED],
+						"expires": three[EXPIRES],
+						"arr": [_one, _two]
+					};
+
+					assert.equals(one, _one);
+					assert.equals(two, _two);
+					assert.equals(three, _three);
 				},
 
 				"'one' is defined" : function () {

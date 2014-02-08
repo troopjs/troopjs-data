@@ -147,8 +147,8 @@ define([ "troopjs-core/component/base", "poly/object", "poly/array" ], function 
 
 		// Check if we need to move result between generations
 		move : {
-			// Break fast if id is NULL
-			if (id === NULL) {
+			// Break fast if id is UNDEFINED
+			if (id === UNDEFINED) {
 				break move;
 			}
 
