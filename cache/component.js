@@ -6,6 +6,7 @@ define([ "troopjs-core/component/base", "poly/object", "poly/array" ], function 
 	"use strict";
 
 	var UNDEFINED;
+	var TRUE = true;
 	var FALSE = false;
 	var NULL = null;
 	var OBJECT = Object;
@@ -68,8 +69,9 @@ define([ "troopjs-core/component/base", "poly/object", "poly/array" ], function 
 				result = me[id];
 
 				// Bypass collapsed object that already exists in cache.
-				if(node[_COLLAPSED] === true)
+				if(node[_COLLAPSED] === TRUE) {
 					return result;
+				}
 
 				break cache;
 			}
@@ -175,10 +177,10 @@ define([ "troopjs-core/component/base", "poly/object", "poly/array" ], function 
 			}
 
 			add : {
-
 				// Collapsed object should not be collected by GC.
-				if(result[_COLLAPSED] === true)
+				if(result[_COLLAPSED] === TRUE) {
 					break add;
+				}
 
 				// Update expiration time
 				result[_EXPIRES] = expires;

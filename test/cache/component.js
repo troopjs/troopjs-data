@@ -8,6 +8,7 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 
 	var CACHE = "cache";
 	var INDEXED = "indexed";
+	var EXPIRES = "expires";
 	var TIMEOUT = "timeout";
 
 	require( [ "troopjs-data/cache/component", "when/delay" ] , function (Cache, delay) {
@@ -29,7 +30,7 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 				});
 			},
 
-			"with emty cache" : {
+			"with empty cache" : {
 				"'whatever' is undefined" : function () {
 					refute.defined(this[CACHE]["whatever"]);
 				}
@@ -58,7 +59,7 @@ buster.testCase("troopjs-data/cache/component", function (run) {
 					assert.same(cache["one"]["two"], cache["two"]);
 				},
 
-				"Properties of 'one' are pruned after update" : function () {
+				"properties of 'one' are pruned after update" : function () {
 					var cache = this[CACHE];
 					var one = cache["one"];
 
