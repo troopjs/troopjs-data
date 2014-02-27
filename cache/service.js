@@ -3,6 +3,7 @@
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
 define([ "troopjs-core/component/service" ], function CacheServiceModule(Service) {
+	"use strict";
 
 	var UNDEFINED;
 	var ARRAY_SLICE = Array.prototype.slice;
