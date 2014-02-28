@@ -2,7 +2,7 @@
  * TroopJS data/query/component
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-define([ "troopjs-core/component/base" ], function QueryModule(Component) {
+define([ "troopjs-core/mixin/base" ], function QueryModule(Base) {
 	"use strict";
 
 	var UNDEFINED;
@@ -35,9 +35,9 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 	/**
 	 * Component who understands the ubiquitous data query string format.
 	 * @class data.query.component
-	 * @extends core.component.base
+	 * @extends core.mixin.base
 	 */
-	return Component.extend(function QueryComponent(query) {
+	return Base.extend(function QueryComponent(query) {
 		var me = this;
 
 		if (query !== UNDEFINED) {

@@ -2,7 +2,7 @@
  * TroopJS data/store/component module
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], function StoreModule(Gadget, when, apply) {
+define([ "troopjs-core/mixin/base", "when", "when/apply", "poly/array" ], function StoreModule(Base, when, apply) {
 	"use strict";
 
 	var UNDEFINED;
@@ -158,9 +158,9 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 	/**
 	 * A simple key-value store that supports **dot separated key** format.
 	 * @class data.store.component
-	 * @extends core.component.gadget
+	 * @extends core.mixin.base
 	 */
-	return Gadget.extend(function StoreComponent(adapter) {
+	return Base.extend(function StoreComponent(adapter) {
 		if (arguments[LENGTH] === 0) {
 			throw new Error("No adapter(s) provided");
 		}
