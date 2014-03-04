@@ -6,9 +6,9 @@
 		"node_modules"
 	],
 	"dependencies": {
-		"troopjs-core": "~3.0",
-		"troopjs-utils": "~2.1",
-		"poly": "~0.6",
-		"when": "~2.7"
+		"troopjs-core": "~3",
+		"troopjs-utils": "~2",
+		"poly": "~0",
+		"when": "~2"
 	}
 }
