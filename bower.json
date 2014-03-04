@@ -1,6 +1,6 @@
 {
 	"name": "troopjs-data",
-	"version": "4.0.0-1",
+	"version": "4.0.1",
 	"ignore": [
 		"**/.*",
 		"node_modules"
