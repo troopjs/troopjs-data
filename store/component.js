@@ -1,9 +1,19 @@
 /*
- * TroopJS data/store/component module
- * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
+ * @license MIT http://troopjs.mit-license.org/
  */
-define([ "troopjs-core/mixin/base", "when", "when/apply", "poly/array" ], function StoreModule(Base, when, apply) {
+define([
+	"troopjs-core/mixin/base",
+	"when",
+	"when/apply",
+	"poly/array"
+], function StoreModule(Base, when, apply) {
 	"use strict";
+
+	/**
+	 * A simple key-value store that supports **dot separated key** format.
+	 * @class data.store.component
+	 * @extends core.mixin.base
+	 */
 
 	var UNDEFINED;
 	var OBJECT_TOSTRING = Object.prototype.toString;
@@ -20,11 +30,11 @@ define([ "troopjs-core/mixin/base", "when", "when/apply", "poly/array" ], functi
 	var CLEAR = "clear";
 	var LOCKS = "locks";
 
-	/*
+	/**
 	 * Applies method to this (if it exists)
 	 * @param {string} method Method name
 	 * @returns {boolean|*}
-	 * @private
+	 * @ignore
 	 */
 	function applyMethod(method) {
 		/*jshint validthis:true*/
@@ -33,12 +43,12 @@ define([ "troopjs-core/mixin/base", "when", "when/apply", "poly/array" ], functi
 		return method in me && me[method].apply(me, ARRAY_SLICE.call(arguments, 1));
 	}
 
-	/*
+	/**
 	 * Puts value
 	 * @param {string|null} key Key - can be dot separated for sub keys
 	 * @param {*} value Value
 	 * @returns {Promise} Promise of put
-	 * @private
+	 * @ignore
 	 */
 	function put(key, value) {
 		/*jshint validthis:true*/
@@ -90,11 +100,11 @@ define([ "troopjs-core/mixin/base", "when", "when/apply", "poly/array" ], functi
 			: when(value);
 	}
 
-	/*
+	/**
 	 * Gets value
 	 * @param {string} key Key - can be dot separated for sub keys
 	 * @returns {*} Value
-	 * @private
+	 * @ignore
 	 */
 	function get(key) {
 		/*jshint validthis:true*/
@@ -122,11 +132,11 @@ define([ "troopjs-core/mixin/base", "when", "when/apply", "poly/array" ], functi
 		return node;
 	}
 
-	/*
+	/**
 	 * Check is key exists
 	 * @param key {string} key Key - can be dot separated for sub keys
 	 * @returns {boolean}
-	 * @private
+	 * @ignore
 	 */
 	function has(key) {
 		/*jshint validthis:true*/
@@ -156,9 +166,9 @@ define([ "troopjs-core/mixin/base", "when", "when/apply", "poly/array" ], functi
 	}
 
 	/**
-	 * A simple key-value store that supports **dot separated key** format.
-	 * @class data.store.component
-	 * @extends core.mixin.base
+	 * @method constructor
+	 * @param {...Object} adapter One or more adapters
+	 * @throws {Error} If no adapter was provided
 	 */
 	return Base.extend(function StoreComponent(adapter) {
 		if (arguments[LENGTH] === 0) {
@@ -167,15 +177,35 @@ define([ "troopjs-core/mixin/base", "when", "when/apply", "poly/array" ], functi
 
 		var me = this;
 
+		/**
+		 * Current adapters
+		 * @private
+		 * @readonly
+		 * @property {Array} adapters
+		 */
 		me[ADAPTERS] = ARRAY_SLICE.call(arguments);
+
+		/**
+		 * Current storage
+		 * @private
+		 * @readonly
+		 * @property {Object} storage
+		 */
 		me[STORAGE] = {};
+
+		/**
+		 * Current locks
+		 * @private
+		 * @readonly
+		 * @property {Object} locks
+		 */
 		me[LOCKS] = {};
 	}, {
 		"displayName" : "data/store/component",
 
 		/**
 		 * Waits for store to be "locked"
-		 * @param {string} key Key
+		 * @param {String} key Key
 		 * @param {Function} [onFulfilled] onFulfilled callback
 		 * @param {Function} [onRejected] onRejected callback
 		 * @param {Function} [onProgress] onProgress callback
@@ -196,7 +226,7 @@ define([ "troopjs-core/mixin/base", "when", "when/apply", "poly/array" ], functi
 
 		/**
 		 * Gets state value
-		 * @param {String...} key Key - can be dot separated for sub keys
+		 * @param {...String} key Key - can be dot separated for sub keys
 		 * @param {Function} [onFulfilled] onFulfilled callback
 		 * @param {Function} [onRejected] onRejected callback
 		 * @param {Function} [onProgress] onProgress callback
@@ -279,8 +309,8 @@ define([ "troopjs-core/mixin/base", "when", "when/apply", "poly/array" ], functi
 
 		/**
 		 * Checks if key exists
-		 * @param {string} key Key - can be dot separated for sub keys
-		 * @returns {boolean} True if key exists, otherwise false
+		 * @param {String} key Key - can be dot separated for sub keys
+		 * @returns {Boolean} True if key exists, otherwise false
 		 */
 		"has" : function (key) {
 			return has.call(this, key);

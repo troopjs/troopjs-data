@@ -1,9 +1,14 @@
 /*
- * TroopJS data/cache/service
- * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
+ * @license MIT http://troopjs.mit-license.org/
  */
 define([ "troopjs-core/component/service" ], function CacheServiceModule(Service) {
 	"use strict";
+
+	/**
+	 * Service for evicting values from one or more {@link data.cache.component caches}
+	 * @class data.cache.service
+	 * @extends core.component.service
+	 */
 
 	var UNDEFINED;
 	var ARRAY_SLICE = Array.prototype.slice;
@@ -58,7 +63,11 @@ define([ "troopjs-core/component/service" ], function CacheServiceModule(Service
 		generations[HEAD] = current;
 	}
 
-	return Service.extend(function CacheService() {
+	/**
+	 * @method constructor
+	 * @param {...data.cache.component} cache One or more cache components
+	 */
+	return Service.extend(function CacheService(cache) {
 		this[CACHES] = ARRAY_SLICE.call(arguments);
 	}, {
 		"sig/start" : function start(delay) {
