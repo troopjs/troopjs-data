@@ -2,7 +2,7 @@
  * TroopJS data/query/service
  * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
  */
-define([ "module", "troopjs-core/component/service", "./component", "troopjs-utils/merge", "when", "when/apply" ], function QueryServiceModule(module, Service, Query, merge, when, apply) {
+define([ "module", "troopjs-core/component/service", "./component", "troopjs-utils/merge", "when" ], function QueryServiceModule(module, Service, Query, merge, when) {
 	"use strict";
 
 	var UNDEFINED;
