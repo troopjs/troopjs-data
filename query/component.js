@@ -1,9 +1,14 @@
-/*
- * TroopJS data/query/component
- * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
+/**
+ * @license MIT http://troopjs.mit-license.org/
  */
 define([ "troopjs-core/mixin/base" ], function QueryModule(Base) {
 	"use strict";
+
+	/**
+	 * Component who understands the ubiquitous data query string format.
+	 * @class data.query.component
+	 * @extends core.mixin.base
+	 */
 
 	var UNDEFINED;
 	var TRUE = true;
@@ -33,9 +38,8 @@ define([ "troopjs-core/mixin/base" ], function QueryModule(Base) {
 	var TO_TEXT = "!'$1'";
 
 	/**
-	 * Component who understands the ubiquitous data query string format.
-	 * @class data.query.component
-	 * @extends core.mixin.base
+	 * @method constructor
+	 * @param {String} [query] data query
 	 */
 	return Base.extend(function QueryComponent(query) {
 		var me = this;
@@ -48,8 +52,8 @@ define([ "troopjs-core/mixin/base" ], function QueryModule(Base) {
 
 		/**
 		 * Parse the query string.
-		 * @param query
-		 * @returns this
+		 * @chainable
+		 * @param {String} query data query
 		 */
 		"parse" : function parse(query) {
 			var me = this;
@@ -159,8 +163,8 @@ define([ "troopjs-core/mixin/base" ], function QueryModule(Base) {
 		/**
 		 * Further reduce the query string elements based on the cache content,
 		 * to eliminate unnecessary queries made.
+		 * @chainable
 		 * @param {Object} cache The cache dictionary.
-		 * @returns this
 		 */
 		"reduce" : function reduce(cache) {
 			var me = this;
@@ -340,7 +344,7 @@ define([ "troopjs-core/mixin/base" ], function QueryModule(Base) {
 
 		/**
 		 * Rebuild the (reduced) query string.
-		 * @returns {String}
+		 * @returns {String} new query string
 		 */
 		"rewrite" : function rewrite() {
 			var me = this;

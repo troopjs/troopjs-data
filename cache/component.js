@@ -1,9 +1,18 @@
-/*
- * TroopJS data/cache/component
- * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
+/**
+ * @license MIT http://troopjs.mit-license.org/
  */
-define([ "troopjs-core/component/base", "poly/object", "poly/array" ], function CacheModule(Component) {
+define([
+	"troopjs-core/component/base",
+	"poly/object",
+	"poly/array"
+], function CacheModule(Component) {
 	"use strict";
+
+	/**
+	 * Component for handling effective object caching with cycle references concerned.
+	 * @class data.cache.component
+	 * @extends core.component.base
+	 */
 
 	var UNDEFINED;
 	var TRUE = true;
@@ -26,8 +35,9 @@ define([ "troopjs-core/component/base", "poly/object", "poly/array" ], function 
 	var _INDEXED = "indexed";
 	var _COLLAPSED = "collapsed";
 
-	/*
+	/**
 	 * Internal method to put a node in the cache
+	 * @ignore
 	 * @param node Node
 	 * @param _constructor Constructor of value
 	 * @param now Current time (seconds)
@@ -227,11 +237,15 @@ define([ "troopjs-core/component/base", "poly/object", "poly/array" ], function 
 	}
 
 	/**
-	 * Component for handling effective object caching with cycle references concerned.
-	 * @class data.cache.component
-	 * @extends core.component.base
+	 * @method constructor
 	 */
 	return Component.extend(function CacheComponent() {
+		/**
+		 * Cache generations
+		 * @private
+		 * @readonly
+		 * @property {Object} generations
+		 */
 		this[GENERATIONS] = {};
 	}, {
 		"displayName" : "data/cache/component",

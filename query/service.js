@@ -1,9 +1,21 @@
-/*
- * TroopJS data/query/service
- * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
+/**
+ * @license MIT http://troopjs.mit-license.org/
  */
-define([ "module", "troopjs-core/component/service", "./component", "troopjs-utils/merge", "when" ], function QueryServiceModule(module, Service, Query, merge, when) {
+define([
+	"module",
+	"troopjs-core/component/service",
+	"./component",
+	"troopjs-utils/merge",
+	"when"
+], function QueryServiceModule(module, Service, Query, merge, when) {
 	"use strict";
+
+	/**
+	 * Service that batch processes the query requests send to server and cache the results.
+	 * @class data.query.service
+	 * @extends core.component.service
+	 * @uses net.ajax.service
+	 */
 
 	var UNDEFINED;
 	var ARRAY_PROTO = Array.prototype;
@@ -23,11 +35,9 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 	var MODULE_CONFIG = module.config();
 
 	/**
-	 * Service that batch processes the query requests send to server and cache the results.
-	 *
-	 * ** Note ** Ajax service is used to talk to the server.
-	 * @class data.query.service
-	 * @extends core.component.service
+	 * @method constructor
+	 * @param {data.cache.component} cache Cache
+	 * @throws {Error} If no cache is provided
 	 */
 	return Service.extend(function QueryService(cache) {
 		var me = this;
@@ -36,7 +46,20 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 			throw new Error("No cache provided");
 		}
 
+		/**
+		 * Current batches
+		 * @private
+		 * @readonly
+		 * @property {Array} batches
+		 */
 		me[BATCHES] = [];
+
+		/**
+		 * Current cache
+		 * @private
+		 * @readonly
+		 * @property {data.cache.component} cache
+		 */
 		me[CACHE] = cache;
 
 		me.configure(MODULE_CONFIG);
