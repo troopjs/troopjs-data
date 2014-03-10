@@ -68,8 +68,20 @@ define([ "troopjs-core/component/service" ], function CacheServiceModule(Service
 	 * @param {...data.cache.component} cache One or more cache components
 	 */
 	return Service.extend(function CacheService(cache) {
+		/**
+		 * Internal caches
+		 * @private
+		 * @readonly
+		 * @type {data.cache.component[]} caches
+		 */
 		this[CACHES] = ARRAY_SLICE.call(arguments);
 	}, {
+		/**
+		 * @handler
+		 * @inheritdoc
+		 * @localdoc Starts the cache eviction
+		 * @param {Number} delay Delay between cache eviction sweeps
+		 */
 		"sig/start" : function start(delay) {
 			var me = this;
 			var caches = me[CACHES];
@@ -98,10 +110,15 @@ define([ "troopjs-core/component/service" ], function CacheServiceModule(Service
 			loop();
 		},
 
+		/**
+		 * @handler
+		 * @inheritdoc
+		 * @localdoc Stops the cache eviction
+		 */
 		"sig/stop" : function stop() {
 			var me = this;
 
-			// Clear interval
+			// Clear timeout
 			clearTimeout(me[TIMEOUT]);
 		}
 	});

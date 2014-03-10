@@ -66,6 +66,11 @@ define([
 	}, {
 		"displayName" : "data/query/service",
 
+		/**
+		 * @handler
+		 * @inheritdoc
+		 * @localdoc Starts batch interval
+		 */
 		"sig/start" : function start() {
 			var me = this;
 			var cache = me[CACHE];
@@ -84,6 +89,11 @@ define([
 				// Reset batches
 				me[BATCHES] = [];
 
+				/**
+				 * Requests via ajax
+				 * @ignore
+				 * @fires net.ajax.service#event-hub/ajax
+				 */
 				function request() {
 					var q = [];
 					var i;
@@ -149,6 +159,11 @@ define([
 			}, 200);
 		},
 
+		/**
+		 * @handler
+		 * @inheritdoc
+		 * @localdoc Stops batch interval
+		 */
 		"sig/stop" : function stop() {
 			var me = this;
 
@@ -164,10 +179,11 @@ define([
 
 		/**
 		 * Handle query request on hub event.
-		 * @event
+		 * @handler
+		 * @param {...String} query TroopJS data query
 		 * @returns {Promise}
 		 */
-		"hub/query" : function hubQuery(/* query, query, query, .., */) {
+		"hub/query" : function hubQuery(query) {
 			var me = this;
 			var batches = me[BATCHES];
 			var cache = me[CACHE];
@@ -178,7 +194,6 @@ define([
 			var j;
 			var iMax;
 			var queries;
-			var query;
 
 			// Create deferred batch
 			var deferred = when.defer();

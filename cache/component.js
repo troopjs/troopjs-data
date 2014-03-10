@@ -250,6 +250,11 @@ define([
 	}, {
 		"displayName" : "data/cache/component",
 
+		/**
+		 * @handler
+		 * @inheritdoc
+		 * @localdoc Purges all objects that duck-type cache-able
+		 */
 		"sig/finalize" : function finalize() {
 			var me = this;
 
