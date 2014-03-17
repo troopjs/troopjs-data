@@ -72,7 +72,7 @@ define([ "troopjs-core/component/service" ], function CacheServiceModule(Service
 		 * Internal caches
 		 * @private
 		 * @readonly
-		 * @type {data.cache.component[]} caches
+		 * @property {data.cache.component[]} caches
 		 */
 		this[CACHES] = ARRAY_SLICE.call(arguments);
 	}, {
