@@ -5,7 +5,7 @@ define([
 	"module",
 	"troopjs-core/component/service",
 	"./component",
-	"troopjs-utils/merge",
+	"troopjs-util/merge",
 	"when"
 ], function QueryServiceModule(module, Service, Query, merge, when) {
 	"use strict";
