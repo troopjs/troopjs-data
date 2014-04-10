@@ -1,6 +1,6 @@
 {
   "name": "troopjs-data",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "ignore": [
     "**/.*",
     "node_modules"
@@ -9,6 +9,6 @@
     "troopjs-core": "~3",
     "troopjs-util": "~3",
     "poly": "~0",
-    "when": "~2"
+    "when": "~3"
   }
 }
