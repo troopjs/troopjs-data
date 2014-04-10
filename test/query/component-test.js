@@ -2,8 +2,9 @@
 buster.testCase("troopjs-data/query/component", function (run) {
 	"use strict";
 
+	var assert = buster.referee.assert;
+
 	var UNDEFINED;
-	var assert = buster.assert;
 
 	require( [ "troopjs-data/query/component", "troopjs-data/cache/component" ] , function (Query, Cache) {
 		run({

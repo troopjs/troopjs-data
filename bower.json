@@ -1,8 +1,14 @@
 {
-	"name": "troopjs-data",
-	"version": "2.1.0",
-	"ignore": [
-		"**/.*",
-		"node_modules"
-	]
+  "name": "troopjs-data",
+  "version": "4.0.2",
+  "ignore": [
+    "**/.*",
+    "node_modules"
+  ],
+  "dependencies": {
+    "troopjs-core": "~3",
+    "troopjs-util": "~3",
+    "poly": "~0",
+    "when": "~2"
+  }
 }

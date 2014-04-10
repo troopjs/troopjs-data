@@ -1,9 +1,21 @@
 /**
- * TroopJS data/query/service
- * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
+ * @license MIT http://troopjs.mit-license.org/
  */
-define([ "module", "troopjs-core/component/service", "./component", "troopjs-utils/merge", "when", "when/apply" ], function QueryServiceModule(module, Service, Query, merge, when, apply) {
+define([
+	"module",
+	"troopjs-core/component/service",
+	"./component",
+	"troopjs-util/merge",
+	"when"
+], function QueryServiceModule(module, Service, Query, merge, when) {
 	"use strict";
+
+	/**
+	 * Service that batch processes the query requests send to server and cache the results.
+	 * @class data.query.service
+	 * @extends core.component.service
+	 * @uses net.ajax.service
+	 */
 
 	var UNDEFINED;
 	var ARRAY_PROTO = Array.prototype;
@@ -22,6 +34,11 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 	var Q = "q";
 	var MODULE_CONFIG = module.config();
 
+	/**
+	 * @method constructor
+	 * @param {data.cache.component} cache Cache
+	 * @throws {Error} If no cache is provided
+	 */
 	return Service.extend(function QueryService(cache) {
 		var me = this;
 
@@ -29,13 +46,31 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 			throw new Error("No cache provided");
 		}
 
+		/**
+		 * Current batches
+		 * @private
+		 * @readonly
+		 * @property {Array} batches
+		 */
 		me[BATCHES] = [];
+
+		/**
+		 * Current cache
+		 * @private
+		 * @readonly
+		 * @property {data.cache.component} cache
+		 */
 		me[CACHE] = cache;
 
 		me.configure(MODULE_CONFIG);
 	}, {
 		"displayName" : "data/query/service",
 
+		/**
+		 * @handler
+		 * @inheritdoc
+		 * @localdoc Starts batch interval
+		 */
 		"sig/start" : function start() {
 			var me = this;
 			var cache = me[CACHE];
@@ -54,6 +89,11 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 				// Reset batches
 				me[BATCHES] = [];
 
+				/**
+				 * Requests via ajax
+				 * @ignore
+				 * @fires net.ajax.service#event-hub/ajax
+				 */
 				function request() {
 					var q = [];
 					var i;
@@ -119,6 +159,11 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 			}, 200);
 		},
 
+		/**
+		 * @handler
+		 * @inheritdoc
+		 * @localdoc Stops batch interval
+		 */
 		"sig/stop" : function stop() {
 			var me = this;
 
@@ -132,7 +177,13 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 			}
 		},
 
-		"hub/query" : function hubQuery(/* query, query, query, .., */) {
+		/**
+		 * Handle query request on hub event.
+		 * @handler
+		 * @param {...String} query TroopJS data query
+		 * @returns {Promise}
+		 */
+		"hub/query" : function hubQuery(query) {
 			var me = this;
 			var batches = me[BATCHES];
 			var cache = me[CACHE];
@@ -143,7 +194,6 @@ define([ "module", "troopjs-core/component/service", "./component", "troopjs-uti
 			var j;
 			var iMax;
 			var queries;
-			var query;
 
 			// Create deferred batch
 			var deferred = when.defer();

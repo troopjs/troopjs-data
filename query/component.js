@@ -1,9 +1,14 @@
 /**
- * TroopJS data/query/component
- * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
+ * @license MIT http://troopjs.mit-license.org/
  */
-define([ "troopjs-core/component/base" ], function QueryModule(Component) {
+define([ "troopjs-core/mixin/base" ], function QueryModule(Base) {
 	"use strict";
+
+	/**
+	 * Component who understands the ubiquitous data query string format.
+	 * @class data.query.component
+	 * @extends core.mixin.base
+	 */
 
 	var UNDEFINED;
 	var TRUE = true;
@@ -32,7 +37,11 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 	var RE_RAW = /!(.*[!,|.\s]+.*)/;
 	var TO_TEXT = "!'$1'";
 
-	return Component.extend(function QueryComponent(query) {
+	/**
+	 * @method constructor
+	 * @param {String} [query] data query
+	 */
+	return Base.extend(function QueryComponent(query) {
 		var me = this;
 
 		if (query !== UNDEFINED) {
@@ -41,6 +50,11 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 	}, {
 		"displayName" : "data/query/component",
 
+		/**
+		 * Parse the query string.
+		 * @chainable
+		 * @param {String} query data query
+		 */
 		"parse" : function parse(query) {
 			var me = this;
 
@@ -146,6 +160,12 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 			return me;
 		},
 
+		/**
+		 * Further reduce the query string elements based on the cache content,
+		 * to eliminate unnecessary queries made.
+		 * @chainable
+		 * @param {Object} cache The cache dictionary.
+		 */
 		"reduce" : function reduce(cache) {
 			var me = this;
 			var now = 0 | new Date().getTime() / 1000;
@@ -307,6 +327,10 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 			return me;
 		},
 
+		/**
+		 * Retrieve the AST as the parsed result.
+		 * @returns {Array} the result AST.
+		 */
 		"ast" : function ast() {
 			var me = this;
 
@@ -318,6 +342,10 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 			return me[_AST];
 		},
 
+		/**
+		 * Rebuild the (reduced) query string.
+		 * @returns {String} new query string
+		 */
 		"rewrite" : function rewrite() {
 			var me = this;
 

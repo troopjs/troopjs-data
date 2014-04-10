@@ -1,20 +1,28 @@
 /**
- * TroopJS data/cache/component
- * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
+ * @license MIT http://troopjs.mit-license.org/
  */
-define([ "troopjs-core/component/base" ], function CacheModule(Component) {
+define([
+	"troopjs-core/component/base",
+	"poly/object",
+	"poly/array"
+], function CacheModule(Component) {
 	"use strict";
 
+	/**
+	 * Component for handling effective object caching with cycle references concerned.
+	 * @class data.cache.component
+	 * @extends core.component.base
+	 */
+
 	var UNDEFINED;
+	var TRUE = true;
 	var FALSE = false;
 	var NULL = null;
 	var OBJECT = Object;
 	var ARRAY = Array;
 
 	var SECOND = 1000;
-	var INTERVAL = "interval";
 	var GENERATIONS = "generations";
-	var AGE = "age";
 	var HEAD = "head";
 	var NEXT = "next";
 	var EXPIRES = "expires";
@@ -29,6 +37,7 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 
 	/**
 	 * Internal method to put a node in the cache
+	 * @ignore
 	 * @param node Node
 	 * @param _constructor Constructor of value
 	 * @param now Current time (seconds)
@@ -70,8 +79,9 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 				result = me[id];
 
 				// Bypass collapsed object that already exists in cache.
-				if(node[_COLLAPSED] === true)
+				if(node[_COLLAPSED] === TRUE) {
 					return result;
+				}
 
 				break cache;
 			}
@@ -147,8 +157,8 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 
 		// Check if we need to move result between generations
 		move : {
-			// Break fast if id is NULL
-			if (id === NULL) {
+			// Break fast if id is UNDEFINED
+			if (id === UNDEFINED) {
 				break move;
 			}
 
@@ -177,10 +187,10 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 			}
 
 			add : {
-
 				// Collapsed object should not be collected by GC.
-				if(result[_COLLAPSED] === true)
+				if(result[_COLLAPSED] === TRUE) {
 					break add;
+				}
 
 				// Update expiration time
 				result[_EXPIRES] = expires;
@@ -226,93 +236,40 @@ define([ "troopjs-core/component/base" ], function CacheModule(Component) {
 		return result;
 	}
 
-	return Component.extend(function CacheComponent(age) {
-		var me = this;
-
-		me[AGE] = age || (60 * SECOND);
-		me[GENERATIONS] = {};
+	/**
+	 * @method constructor
+	 */
+	return Component.extend(function CacheComponent() {
+		/**
+		 * Cache generations
+		 * @private
+		 * @readonly
+		 * @property {Object} generations
+		 */
+		this[GENERATIONS] = {};
 	}, {
 		"displayName" : "data/cache/component",
 
-		"sig/start" : function start() {
-			var me = this;
-			var generations = me[GENERATIONS];
-
-			// Create new sweep interval
-			me[INTERVAL] = INTERVAL in me
-				? me[INTERVAL]
-				: setInterval(function sweep() {
-				/*jshint forin:false*/
-				// Calculate expiration of this generation
-				var expires = 0 | new Date().getTime() / SECOND;
-
-				var property;
-				var current;
-
-				// Get head
-				current = generations[HEAD];
-
-				// Fail fast if there's no head
-				if (current === UNDEFINED) {
-					return;
-				}
-
-				do {
-					// Exit if this generation is to young
-					if (current[EXPIRES] > expires) {
-						break;
-					}
-
-					// Iterate all properties on current
-					for (property in current) {
-						// And is it not a reserved property
-						if (property === EXPIRES || property === NEXT || property === GENERATIONS) {
-							continue;
-						}
-
-						// Delete from me (cache)
-						delete me[property];
-					}
-
-					// Delete generation
-					delete generations[current[EXPIRES]];
-				}
-				// While there's a next
-				while ((current = current[NEXT]));
-
-				// Reset head
-				generations[HEAD] = current;
-			}, me[AGE]);
-		},
-
-		"sig/stop" : function stop() {
-			var me = this;
-
-			// Only do this if we have an interval
-			if (INTERVAL in me) {
-				// Clear interval
-				clearInterval(me[INTERVAL]);
-
-				// Reset interval
-				delete me[INTERVAL];
-			}
-		},
-
+		/**
+		 * @handler
+		 * @inheritdoc
+		 * @localdoc Purges all objects that duck-type cache-able
+		 */
 		"sig/finalize" : function finalize() {
-			/*jshint forin:false*/
 			var me = this;
-			var property;
 
 			// Iterate all properties on me
-			for (property in me) {
-				// Don't delete non-objects or objects that don't ducktype cachable
-				if (me[property][CONSTRUCTOR] !== OBJECT || !(_ID in me[property])) {
-					continue;
-				}
+			Object.keys(me).forEach(function (property) {
+				var value;
 
-				// Delete from me (cache)
-				delete me[property];
-			}
+				// Check if we should delete this property
+				if ((value = me[property]) !== UNDEFINED // value is not UNDEFINED
+					&& [CONSTRUCTOR] === OBJECT            // and value[CONSTRUCTOR] is OBJECT
+					&& value.hasOwnProperty(_ID)) {        // and value ducktypes cachable
+					// Delete from me (cache)
+					delete me[property];
+				}
+			});
 		},
 
 		/**

@@ -1,9 +1,19 @@
 /**
- * TroopJS data/store/component module
- * @license MIT http://troopjs.mit-license.org/ © Mikael Karon mailto:mikael@karon.se
+ * @license MIT http://troopjs.mit-license.org/
  */
-define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], function StoreModule(Gadget, when, apply) {
+define([
+	"troopjs-core/mixin/base",
+	"when",
+	"when/apply",
+	"poly/array"
+], function StoreModule(Base, when, apply) {
 	"use strict";
+
+	/**
+	 * A simple key-value store that supports **dot separated key** format.
+	 * @class data.store.component
+	 * @extends core.mixin.base
+	 */
 
 	var UNDEFINED;
 	var OBJECT_TOSTRING = Object.prototype.toString;
@@ -24,7 +34,7 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 	 * Applies method to this (if it exists)
 	 * @param {string} method Method name
 	 * @returns {boolean|*}
-	 * @private
+	 * @ignore
 	 */
 	function applyMethod(method) {
 		/*jshint validthis:true*/
@@ -38,7 +48,7 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 	 * @param {string|null} key Key - can be dot separated for sub keys
 	 * @param {*} value Value
 	 * @returns {Promise} Promise of put
-	 * @private
+	 * @ignore
 	 */
 	function put(key, value) {
 		/*jshint validthis:true*/
@@ -94,7 +104,7 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 	 * Gets value
 	 * @param {string} key Key - can be dot separated for sub keys
 	 * @returns {*} Value
-	 * @private
+	 * @ignore
 	 */
 	function get(key) {
 		/*jshint validthis:true*/
@@ -126,7 +136,7 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 	 * Check is key exists
 	 * @param key {string} key Key - can be dot separated for sub keys
 	 * @returns {boolean}
-	 * @private
+	 * @ignore
 	 */
 	function has(key) {
 		/*jshint validthis:true*/
@@ -155,25 +165,50 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 		return node !== UNDEFINED && last in node;
 	}
 
-	return Gadget.extend(function StoreComponent(adapter) {
+	/**
+	 * @method constructor
+	 * @param {...Object} adapter One or more adapters
+	 * @throws {Error} If no adapter was provided
+	 */
+	return Base.extend(function StoreComponent(adapter) {
 		if (arguments[LENGTH] === 0) {
 			throw new Error("No adapter(s) provided");
 		}
 
 		var me = this;
 
+		/**
+		 * Current adapters
+		 * @private
+		 * @readonly
+		 * @property {Array} adapters
+		 */
 		me[ADAPTERS] = ARRAY_SLICE.call(arguments);
+
+		/**
+		 * Current storage
+		 * @private
+		 * @readonly
+		 * @property {Object} storage
+		 */
 		me[STORAGE] = {};
+
+		/**
+		 * Current locks
+		 * @private
+		 * @readonly
+		 * @property {Object} locks
+		 */
 		me[LOCKS] = {};
 	}, {
 		"displayName" : "data/store/component",
 
 		/**
 		 * Waits for store to be "locked"
-		 * @param {string} key Key
-		 * @param {function} [onFulfilled] onFulfilled callback
-		 * @param {function} [onRejected] onRejected callback
-		 * @param {function} [onProgress] onProgress callback
+		 * @param {String} key Key
+		 * @param {Function} [onFulfilled] onFulfilled callback
+		 * @param {Function} [onRejected] onRejected callback
+		 * @param {Function} [onProgress] onProgress callback
 		 * @returns {Promise} Promise of ready
 		 */
 		"lock" : function (key, onFulfilled, onRejected, onProgress) {
@@ -191,10 +226,10 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 
 		/**
 		 * Gets state value
-		 * @param {string..} key Key - can be dot separated for sub keys
-		 * @param {function} [onFulfilled] onFulfilled callback
-		 * @param {function} [onRejected] onRejected callback
-		 * @param {function} [onProgress] onProgress callback
+		 * @param {...String} key Key - can be dot separated for sub keys
+		 * @param {Function} [onFulfilled] onFulfilled callback
+		 * @param {Function} [onRejected] onRejected callback
+		 * @param {Function} [onProgress] onProgress callback
 		 * @returns {Promise} Promise of value
 		 */
 		"get" : function (key, onFulfilled, onRejected, onProgress) {
@@ -235,9 +270,9 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 		 * Puts state value
 		 * @param {string} key Key - can be dot separated for sub keys
 		 * @param {*} value Value
-		 * @param {function} [onFulfilled] onFulfilled callback
-		 * @param {function} [onRejected] onRejected callback
-		 * @param {function} [onProgress] onProgress callback
+		 * @param {Function} [onFulfilled] onFulfilled callback
+		 * @param {Function} [onRejected] onRejected callback
+		 * @param {Function} [onProgress] onProgress callback
 		 * @returns {Promise} Promise of value
 		 */
 		"put" : function (key, value, onFulfilled, onRejected, onProgress) {
@@ -259,9 +294,9 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 		 * Puts state value if key is UNDEFINED
 		 * @param {string} key Key - can be dot separated for sub keys
 		 * @param {*} value Value
-		 * @param {function} [onFulfilled] onFulfilled callback
-		 * @param {function} [onRejected] onRejected callback
-		 * @param {function} [onProgress] onProgress callback
+		 * @param {Function} [onFulfilled] onFulfilled callback
+		 * @param {Function} [onRejected] onRejected callback
+		 * @param {Function} [onProgress] onProgress callback
 		 * @returns {Promise} Promise of value
 		 */
 		"putIfNotHas" : function (key, value, onFulfilled, onRejected, onProgress) {
@@ -274,8 +309,8 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 
 		/**
 		 * Checks if key exists
-		 * @param {string} key Key - can be dot separated for sub keys
-		 * @returns {boolean} True if key exists, otherwise false
+		 * @param {String} key Key - can be dot separated for sub keys
+		 * @returns {Boolean} True if key exists, otherwise false
 		 */
 		"has" : function (key) {
 			return has.call(this, key);
@@ -283,9 +318,9 @@ define([ "troopjs-core/component/gadget", "when", "when/apply", "poly/array" ], 
 
 		/**
 		 * Clears all adapters
-		 * @param {function} [onFulfilled] onFulfilled callback
-		 * @param {function} [onRejected] onRejected callback
-		 * @param {function} [onProgress] onProgress callback
+		 * @param {Function} [onFulfilled] onFulfilled callback
+		 * @param {Function} [onRejected] onRejected callback
+		 * @param {Function} [onProgress] onProgress callback
 		 * @returns {Promise} Promise of clear
 		 */
 		"clear" : function (onFulfilled, onRejected, onProgress) {
