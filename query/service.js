@@ -181,7 +181,7 @@ define([
 		 * Handle query request on hub event.
 		 * @handler
 		 * @param {...String} query TroopJS data query
-		 * @returns {Promise}
+		 * @return {Promise}
 		 */
 		"hub/query" : function hubQuery(query) {
 			var me = this;

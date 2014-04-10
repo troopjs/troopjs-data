@@ -32,8 +32,8 @@ define([
 
 	/**
 	 * Applies method to this (if it exists)
-	 * @param {string} method Method name
-	 * @returns {boolean|*}
+	 * @param {String} method Method name
+	 * @return {Boolean|*}
 	 * @ignore
 	 */
 	function applyMethod(method) {
@@ -45,9 +45,9 @@ define([
 
 	/**
 	 * Puts value
-	 * @param {string|null} key Key - can be dot separated for sub keys
+	 * @param {String|null} key Key - can be dot separated for sub keys
 	 * @param {*} value Value
-	 * @returns {Promise} Promise of put
+	 * @return {Promise} Promise of put
 	 * @ignore
 	 */
 	function put(key, value) {
@@ -102,8 +102,8 @@ define([
 
 	/**
 	 * Gets value
-	 * @param {string} key Key - can be dot separated for sub keys
-	 * @returns {*} Value
+	 * @param {String} key Key - can be dot separated for sub keys
+	 * @return {*} Value
 	 * @ignore
 	 */
 	function get(key) {
@@ -134,8 +134,8 @@ define([
 
 	/**
 	 * Check is key exists
-	 * @param key {string} key Key - can be dot separated for sub keys
-	 * @returns {boolean}
+	 * @param key {String} key Key - can be dot separated for sub keys
+	 * @return {Boolean}
 	 * @ignore
 	 */
 	function has(key) {
@@ -209,7 +209,7 @@ define([
 		 * @param {Function} [onFulfilled] onFulfilled callback
 		 * @param {Function} [onRejected] onRejected callback
 		 * @param {Function} [onProgress] onProgress callback
-		 * @returns {Promise} Promise of ready
+		 * @return {Promise} Promise of ready
 		 */
 		"lock" : function (key, onFulfilled, onRejected, onProgress) {
 			var locks = this[LOCKS];
@@ -230,7 +230,7 @@ define([
 		 * @param {Function} [onFulfilled] onFulfilled callback
 		 * @param {Function} [onRejected] onRejected callback
 		 * @param {Function} [onProgress] onProgress callback
-		 * @returns {Promise} Promise of value
+		 * @return {Promise} Promise of value
 		 */
 		"get" : function (key, onFulfilled, onRejected, onProgress) {
 			/*jshint curly:false*/
@@ -268,12 +268,12 @@ define([
 
 		/**
 		 * Puts state value
-		 * @param {string} key Key - can be dot separated for sub keys
+		 * @param {String} key Key - can be dot separated for sub keys
 		 * @param {*} value Value
 		 * @param {Function} [onFulfilled] onFulfilled callback
 		 * @param {Function} [onRejected] onRejected callback
 		 * @param {Function} [onProgress] onProgress callback
-		 * @returns {Promise} Promise of value
+		 * @return {Promise} Promise of value
 		 */
 		"put" : function (key, value, onFulfilled, onRejected, onProgress) {
 			var me = this;
@@ -292,12 +292,12 @@ define([
 
 		/**
 		 * Puts state value if key is UNDEFINED
-		 * @param {string} key Key - can be dot separated for sub keys
+		 * @param {String} key Key - can be dot separated for sub keys
 		 * @param {*} value Value
 		 * @param {Function} [onFulfilled] onFulfilled callback
 		 * @param {Function} [onRejected] onRejected callback
 		 * @param {Function} [onProgress] onProgress callback
-		 * @returns {Promise} Promise of value
+		 * @return {Promise} Promise of value
 		 */
 		"putIfNotHas" : function (key, value, onFulfilled, onRejected, onProgress) {
 			var me = this;
@@ -310,7 +310,7 @@ define([
 		/**
 		 * Checks if key exists
 		 * @param {String} key Key - can be dot separated for sub keys
-		 * @returns {Boolean} True if key exists, otherwise false
+		 * @return {Boolean} True if key exists, otherwise false
 		 */
 		"has" : function (key) {
 			return has.call(this, key);
@@ -321,7 +321,7 @@ define([
 		 * @param {Function} [onFulfilled] onFulfilled callback
 		 * @param {Function} [onRejected] onRejected callback
 		 * @param {Function} [onProgress] onProgress callback
-		 * @returns {Promise} Promise of clear
+		 * @return {Promise} Promise of clear
 		 */
 		"clear" : function (onFulfilled, onRejected, onProgress) {
 			var me = this;

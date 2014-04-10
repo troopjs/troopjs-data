@@ -41,7 +41,7 @@ define([
 	 * @param node Node
 	 * @param _constructor Constructor of value
 	 * @param now Current time (seconds)
-	 * @returns Cached node
+	 * @return Cached node
 	 */
 	function _put(node, _constructor, now) {
 		/*jshint validthis:true, forin:false, curly:false, -W086*/
@@ -275,7 +275,7 @@ define([
 		/**
 		 * Puts a node into the cache
 		 * @param node Node to add (object || array)
-		 * @returns Cached node (if it existed in the cache before), otherwise the node sent in
+		 * @return Cached node (if it existed in the cache before), otherwise the node sent in
 		 */
 		"put" : function put(node) {
 			var me = this;

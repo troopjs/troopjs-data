@@ -329,7 +329,7 @@ define([ "troopjs-core/mixin/base" ], function QueryModule(Base) {
 
 		/**
 		 * Retrieve the AST as the parsed result.
-		 * @returns {Array} the result AST.
+		 * @return {Array} the result AST.
 		 */
 		"ast" : function ast() {
 			var me = this;
@@ -344,7 +344,7 @@ define([ "troopjs-core/mixin/base" ], function QueryModule(Base) {
 
 		/**
 		 * Rebuild the (reduced) query string.
-		 * @returns {String} new query string
+		 * @return {String} new query string
 		 */
 		"rewrite" : function rewrite() {
 			var me = this;
