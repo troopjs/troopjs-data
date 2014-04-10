@@ -7,7 +7,7 @@ define([ "troopjs-core/component/service" ], function CacheServiceModule(Service
 	/**
 	 * Service for evicting values from one or more {@link data.cache.component caches}
 	 * @class data.cache.service
-	 * @extends core.component.service
+	 * @extend core.component.service
 	 */
 
 	var UNDEFINED;

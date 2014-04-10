@@ -13,7 +13,7 @@ define([
 	/**
 	 * Service that batch processes the query requests send to server and cache the results.
 	 * @class data.query.service
-	 * @extends core.component.service
+	 * @extend core.component.service
 	 * @uses net.ajax.service
 	 */
 

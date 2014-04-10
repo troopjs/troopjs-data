@@ -7,7 +7,7 @@ define([ "troopjs-core/mixin/base" ], function QueryModule(Base) {
 	/**
 	 * Component who understands the ubiquitous data query string format.
 	 * @class data.query.component
-	 * @extends core.mixin.base
+	 * @extend core.mixin.base
 	 */
 
 	var UNDEFINED;

@@ -11,7 +11,7 @@ define([
 	/**
 	 * Component for handling effective object caching with cycle references concerned.
 	 * @class data.cache.component
-	 * @extends core.component.base
+	 * @extend core.component.base
 	 */
 
 	var UNDEFINED;

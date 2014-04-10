@@ -12,7 +12,7 @@ define([
 	/**
 	 * A simple key-value store that supports **dot separated key** format.
 	 * @class data.store.component
-	 * @extends core.mixin.base
+	 * @extend core.mixin.base
 	 */
 
 	var UNDEFINED;
