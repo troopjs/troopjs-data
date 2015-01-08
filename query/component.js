@@ -174,50 +174,70 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 			var ast = me[_AST]; // _AST
 			var result = [];    // Result
 			var i;              // Index
-			var j;
 			var c;
 			var l;              // Length
 			var o;              // Current operation
-			var x;              // Current raw
-			var r;              // Current root
-			var n;              // Current node
+			var n = null;          // Current node
 			var d = FALSE;      // Dead flag
 			var k = FALSE;      // Keep flag
+			var r;              // Current root
 
-			// First step is to resolve what we can from the _AST
-			for (i = 0, l = ast[LENGTH]; i < l; i++) {
-				o = ast[i];
+			// check if the AST has expired on the current node
+			function resolve_expire(ast, current_node) {
+				var j;
+				var x;              // Current raw
+				var m;
 
-				switch (o[OP]) {
+				// Current node
+				var n = current_node;
+				switch (ast[OP]) {
 					case OP_ID :
-						// Set root
-						r = o;
+
+						// Set root only once
+						if (!r) {
+							r = ast;
+						}
 
 						// Get e from o
-						x = o[RAW];
+						x = ast[RAW];
 
 						// Do we have this item in cache
 						if (x in cache) {
 							// Set current node
 							n = cache[x];
 							// Set dead and RESOLVED if we're not collapsed or expired
-							d = o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n && n[_EXPIRES] < now);
-						}
-						else {
+							d = ast[RESOLVED] =
+							n[_COLLAPSED] !== TRUE && !(_EXPIRES in n && n[_EXPIRES] < now);
+						} else {
 							// Reset current root and node
 							n = UNDEFINED;
 							// Reset dead and RESOLVED
-							d = o[RESOLVED] = FALSE;
+							d = ast[RESOLVED] = FALSE;
 						}
 						break;
 
 					case OP_PROPERTY :
 						// Get e from o
-						x = o[RAW];
+						x = ast[RAW];
 
 						// Was previous op dead?
 						if (!d) {
-							o[RESOLVED] = FALSE;
+							ast[RESOLVED] = FALSE;
+						}
+						// property of an array, dive deep
+						else if (n && n[CONSTRUCTOR] === ARRAY) {
+							m = n;
+							n = [];
+							for (j = m[LENGTH]; j-- > 0;) {
+								// Get item
+								c = m[j];
+								// spread over the all array item's property
+								n = n.concat(resolve_expire(ast, c));
+								if (!ast[RESOLVED]) {
+									break;
+								}
+							}
+							d = ast[RESOLVED];
 						}
 						// Do we have a node and this item in the node
 						else if (n && x in n) {
@@ -230,7 +250,7 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 							// If the constructor is an array
 							if (c === ARRAY) {
 								// Set naive resolved
-								o[RESOLVED] = TRUE;
+								ast[RESOLVED] = TRUE;
 
 								// Iterate backwards over n
 								for (j = n[LENGTH]; j-- > 0;) {
@@ -250,28 +270,28 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 									}
 
 									// Change RESOLVED
-									o[RESOLVED] = FALSE;
+									ast[RESOLVED] = FALSE;
 									break;
 								}
 							}
 							// If the constructor is _not_ an object or n does not duck-type _ID
 							else if (c !== OBJECT || !(_ID in n)) {
-								o[RESOLVED] = TRUE;
+								ast[RESOLVED] = TRUE;
 							}
 							// We know c _is_ and object and n _does_ duck-type _ID
 							else {
 								// Change OP to OP_ID
-								o[OP] = OP_ID;
+								ast[OP] = OP_ID;
 								// Update RAW to _ID and TEXT to escaped version of RAW
-								o[TEXT] = (o[RAW] = n[_ID]).replace(RE_RAW, TO_TEXT);
+								ast[TEXT] = (ast[RAW] = n[_ID]).replace(RE_RAW, TO_TEXT);
 								// Set RESOLVED if we're not collapsed or expired
-								o[RESOLVED] = n[_COLLAPSED] !== TRUE && !(_EXPIRES in n && n[_EXPIRES] < now);
+								ast[RESOLVED] =
+								n[_COLLAPSED] !== TRUE && !(_EXPIRES in n && n[_EXPIRES] < now);
 							}
-						}
-						else {
+						} else {
 							// Reset current node and RESOLVED
 							n = UNDEFINED;
-							o[RESOLVED] = FALSE;
+							ast[RESOLVED] = FALSE;
 						}
 						break;
 
@@ -283,14 +303,22 @@ define([ "troopjs-core/component/base" ], function QueryModule(Component) {
 						n = cache[x];
 
 						// Change OP to OP_ID
-						o[OP] = OP_ID;
+						ast[OP] = OP_ID;
 
 						// Copy properties from r
-						o[TEXT] = r[TEXT];
-						o[RAW] = x;
-						o[RESOLVED] = r[RESOLVED];
+						ast[TEXT] = r[TEXT];
+						ast[RAW] = x;
+						ast[RESOLVED] = r[RESOLVED];
 						break;
 				}
+				// return new current node
+				return n;
+			}
+
+			// First step is to resolve what we can from the _AST
+			for (i = 0, l = ast[LENGTH]; i < l; i++) {
+				o = ast[i];
+				n = resolve_expire(o, n);
 			}
 
 			// After that we want to reduce 'dead' operations from the _AST
